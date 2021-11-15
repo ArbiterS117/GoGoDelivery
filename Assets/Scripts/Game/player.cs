@@ -11,6 +11,7 @@ public class player : MonoBehaviour
 
     //private static const JUMPFORCE = 5.0f;
     public float Jumpforce = 5.0f;
+    public bool canJump  = false;
     public bool IsGround = false;
     public float RaycastDistance = 2.5f;
 
@@ -35,7 +36,12 @@ public class player : MonoBehaviour
     public int score = 0;
     public bool HoldingNimotu = false;
 
+    //=========================== timer
+    public  float canJumpTimer  = 1.0f;
+    private float canJumpCTimer = 0.0f;
+
     // Start is called before the first frame update
+
     void Start()
     {
         RigidBody = this.GetComponent<Rigidbody2D>();
@@ -55,12 +61,13 @@ public class player : MonoBehaviour
     {
         IsGround = IsGrounded();
         OnRailCheck();
-
         ///============================================================
         if (!OnRail)
             InputUpdate();
         else
             OnRailInputUpdate();
+
+        StatusUpdate();
 
         //PhysicsUpdate();
     }
@@ -93,9 +100,32 @@ public class player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!IsGround) return;
-            else RigidBody.AddForce(new Vector2(0, Jumpforce));
+            if (!canJump) return;
+            else
+            {
+                RigidBody.AddForce(new Vector2(0, Jumpforce));
+                canJump = false;
+            }
         }
+    }
+
+    void StatusUpdate()
+    {
+        // CanJumpTimer
+        if (!IsGround && !OnRail)
+        {
+            canJumpCTimer += Time.deltaTime;
+            if (canJumpCTimer >= canJumpTimer)
+            {
+                canJump = false;
+            }
+        }
+        else 
+        {
+            canJump = true;
+            canJumpCTimer = 0.0f;
+        }
+        
     }
 
     void PhysicsUpdate()
@@ -110,6 +140,9 @@ public class player : MonoBehaviour
 
         if (Speed >= -Decelerate && Speed < 0) Speed = 0;
         else if (Speed < 0) Speed += Decelerate;
+
+        
+
     }
 
     void OnRailCheck()

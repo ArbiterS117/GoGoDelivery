@@ -37,7 +37,6 @@ public class TimeUI : MonoBehaviour
                 totaltime2--;
                 countdown2text.text = string.Format("{0:00}:{1:00}", M, S);
             }
-            Debug.Log(totaltime2);
         }
         //if (totaltime2 <= 0)
         //{
