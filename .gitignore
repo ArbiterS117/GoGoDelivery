@@ -1,0 +1,12 @@
+.vs
+Logs
+Library
+obj
+Packages
+Temp
+UserSettings
+.gitattributes
+.vsconfig
+Assembly-CSharp.csproj
+GoGoDelivery.sln
+*.meta
