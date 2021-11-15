@@ -11,7 +11,6 @@ public class player : MonoBehaviour
 
     //private static const JUMPFORCE = 5.0f;
     public float Jumpforce = 5.0f;
-    public bool canJump  = false;
     public bool IsGround = false;
     public float RaycastDistance = 2.5f;
 
@@ -37,8 +36,6 @@ public class player : MonoBehaviour
     public bool HoldingNimotu = false;
 
     //=========================== timer
-    public  float canJumpTimer  = 1.0f;
-    private float canJumpCTimer = 0.0f;
 
     // Start is called before the first frame update
 
@@ -100,32 +97,16 @@ public class player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!canJump) return;
-            else
+            if (IsGround) 
             {
                 RigidBody.AddForce(new Vector2(0, Jumpforce));
-                canJump = false;
             }
         }
     }
 
     void StatusUpdate()
     {
-        // CanJumpTimer
-        if (!IsGround && !OnRail)
-        {
-            canJumpCTimer += Time.deltaTime;
-            if (canJumpCTimer >= canJumpTimer)
-            {
-                canJump = false;
-            }
-        }
-        else 
-        {
-            canJump = true;
-            canJumpCTimer = 0.0f;
-        }
-        
+       
     }
 
     void PhysicsUpdate()
