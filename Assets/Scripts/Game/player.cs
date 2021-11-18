@@ -33,9 +33,15 @@ public class player : MonoBehaviour
 
     //=========================== game
     public int score = 0;
-    public bool HoldingNimotu = false;
+    //public bool HoldingNimotu = false;
 
-    //=========================== timer
+    public int HoldingNimotsuNum = 0;
+    static private int MaxNimotsuNum = 3;
+
+    public Transform[] RebornPoint;
+    public Transform[] CRebornPoint;
+
+    public GameObject[] NimotsuHolded = new GameObject[3];
 
     // Start is called before the first frame update
 
@@ -43,6 +49,10 @@ public class player : MonoBehaviour
     {
         RigidBody = this.GetComponent<Rigidbody2D>();
         Speed = 0.0f;
+
+        //GameObject x, y, z;
+        for(int i = 0; i < 3; i++)
+            NimotsuHolded[i] = null;
     }
 
     private void FixedUpdate()
@@ -66,6 +76,7 @@ public class player : MonoBehaviour
 
         StatusUpdate();
 
+        playerSub.AnimationUpdate(this, GetComponent<Animator>());
         //PhysicsUpdate();
     }
 
@@ -164,11 +175,11 @@ public class player : MonoBehaviour
             this.Speed += AddRailSpeed;
         }
 
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    if (!IsGround) return;
-        //    else RigidBody.AddForce(new Vector2(0, Jumpforce));
-        //}
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //if (!IsGround) return;
+            RigidBody.AddForce(new Vector2(0, Jumpforce));
+        }
     }
     void OnRailPhysicsUpdate()
     {
@@ -191,20 +202,65 @@ public class player : MonoBehaviour
         //else if (Speed < 0) Speed += Decelerate;
     }
 
+    //  当たり判定
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "Item")
         {
-            HoldingNimotu = true;
-            Destroy(other.gameObject);
+            if (HoldingNimotsuNum < MaxNimotsuNum)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (NimotsuHolded[i] == null)
+                    {
+                        NimotsuHolded[HoldingNimotsuNum] = other.gameObject;
+                        break;
+                    }
+                }
+
+                HoldingNimotsuNum++;
+                //Destroy(other.gameObject);
+
+            }
         }
 
         if(other.tag == "customer")
         {
-            if (HoldingNimotu == true)
+            if (HoldingNimotsuNum > 0)
             {
-                HoldingNimotu = false;
-                score++;
+                for(int i = 0; i < HoldingNimotsuNum; i++)
+                {
+                    if(NimotsuHolded[i].GetComponent<Nimotu>().GGGoal
+                        == other.gameObject)
+                    {
+                        HoldingNimotsuNum--;
+                        Destroy(other.gameObject);
+              
+                        Destroy(NimotsuHolded[i].gameObject);
+                        NimotsuHolded[i] = null;
+
+                        score++;
+
+                        //-------------------------生成----------------------------
+                        // 新しいItem生成
+                        GameObject obj = (GameObject)Resources.Load("Nimotu");
+                        GameObject Item = (GameObject)Instantiate(obj,
+                                                      RebornPoint[Random.Range(0, 9 + 1)].position,
+                                                      Quaternion.identity);
+
+                        // 新しい目標生成
+                        GameObject xxx = (GameObject)Resources.Load("customer");
+                        GameObject Goal = (GameObject)Instantiate(xxx,
+                                                      CRebornPoint[Random.Range(0, 9 + 1)].position,
+                                                      Quaternion.identity);
+                        // itemと目標を連結
+                        Item.GetComponent<Nimotu>().GGGoal = Goal;
+
+                        break;
+                    }
+                }
+                //HoldingNimotsuNum--;
+                //HoldingNimotu = false;
             }
         }
     }
