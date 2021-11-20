@@ -209,16 +209,22 @@ public class player : MonoBehaviour
         {
             if (HoldingNimotsuNum < MaxNimotsuNum)
             {
+                for(int i = 0; i < 3; i++)
+                {
+                    if (NimotsuHolded[i] == other.gameObject) return;
+                }
+
                 for (int i = 0; i < 3; i++)
                 {
                     if (NimotsuHolded[i] == null)
                     {
-                        NimotsuHolded[HoldingNimotsuNum] = other.gameObject;
+                        NimotsuHolded[i] = other.gameObject;
+                        HoldingNimotsuNum++;
+
                         break;
                     }
                 }
 
-                HoldingNimotsuNum++;
                 //Destroy(other.gameObject);
 
             }
