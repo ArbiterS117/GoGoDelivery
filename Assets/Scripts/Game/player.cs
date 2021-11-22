@@ -36,12 +36,12 @@ public class player : MonoBehaviour
     //public bool HoldingNimotu = false;
 
     public int HoldingNimotsuNum = 0;
-    static private int MaxNimotsuNum = 3;
+    static public int MaxNimotsuNum = 3;
 
     public Transform[] RebornPoint;
     public Transform[] CRebornPoint;
 
-    public GameObject[] NimotsuHolded = new GameObject[3];
+    public GameObject[] NimotsuHolded = new GameObject[MaxNimotsuNum];
 
     // Start is called before the first frame update
 
@@ -219,6 +219,7 @@ public class player : MonoBehaviour
                     if (NimotsuHolded[i] == null)
                     {
                         NimotsuHolded[i] = other.gameObject;
+                        other.GetComponent<Renderer>().enabled = false;
                         HoldingNimotsuNum++;
 
                         break;
@@ -244,6 +245,8 @@ public class player : MonoBehaviour
               
                         Destroy(NimotsuHolded[i].gameObject);
                         NimotsuHolded[i] = null;
+
+                        //ArrowCtrl.IsArrowed[i] = false;
 
                         score++;
 
