@@ -24,7 +24,12 @@ public class TimeUI : MonoBehaviour
     void Update()
     {
         if (totaltime2 <= 0)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            ResultScore.SetFinalScore(player.GetComponent<player>().score);
             SceneManager.LoadScene("Result", LoadSceneMode.Single);
+
+        }
 
         int M = (int)(totaltime2 / 60);
         float S = totaltime2 % 60;

@@ -36,6 +36,16 @@ public class SceneCtrl : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
             {
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                ResultScore.SetFinalScore(player.GetComponent<player>().score);
+                SceneManager.LoadScene("Result", LoadSceneMode.Single);
+            }
+        }
+
+        if (scene.name == "Result")
+        {
+            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            {
                 SceneManager.LoadScene("Title", LoadSceneMode.Single);
             }
         }
