@@ -43,6 +43,9 @@ public class player : MonoBehaviour
 
     public GameObject[] NimotsuHolded = new GameObject[MaxNimotsuNum];
 
+    public float ClimbForce = 25.0f;
+    public float RailUpOffSet = 0.0f;
+
     // Start is called before the first frame update
 
     void Start()
@@ -66,8 +69,34 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        IsGround = IsGrounded();
+        IsGround = IsGrounded();   
         OnRailCheck();
+
+        // 斜面检测
+        RaycastHit2D hit1 = Physics2D.Raycast(transform.position, Vector2.down, RaycastDistance, GroundLayer);
+        if (hit1 == false) { }
+
+        else if (hit1.transform.rotation.z != 0)
+        {
+            if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
+            {
+                RigidBody.AddForce(new Vector2(-ClimbForce, 0));
+            }
+            if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
+            {
+                RigidBody.AddForce(new Vector2(ClimbForce, 0));
+            }
+        }
+
+        RaycastHit2D hit2 = Physics2D.Raycast(transform.position, Vector2.down, RaycastDistance, RailLayer);
+        if (hit2 == false) { }
+
+        else if (hit2.transform.rotation.z != 0)
+        {
+            RigidBody.gravityScale = 0;
+        }
+
+
         ///============================================================
         if (!OnRail)
             InputUpdate();
@@ -79,6 +108,16 @@ public class player : MonoBehaviour
         playerSub.AnimationUpdate(this, GetComponent<Animator>());
         playerSub.GrappleUpdate(this);
         //PhysicsUpdate();
+
+
+        // 下坡修正
+        //RaycastHit2D hit3 = Physics2D.Raycast(transform.position, Vector2.down, RailLayer);
+        //if (hit3 == false) { }
+        //else
+        //{
+        //    transform.position = hit3.point;
+        //    transform.position = new Vector3(transform.position.x, transform.position.y + RailUpOffSet, transform.position.z);
+        //}        
     }
 
     bool IsGrounded()
@@ -93,6 +132,7 @@ public class player : MonoBehaviour
             return true;
         }
 
+        RigidBody.gravityScale = 8.0f;
         return false;
     }
 
@@ -208,6 +248,21 @@ public class player : MonoBehaviour
     //  当たり判定
     private void OnTriggerEnter2D(Collider2D other)
     {
+        //if(other.tag == "Platform")
+        //{
+        //    if(other.transform.rotation.z != 0.0f /*&& other.transform.rotation.z <= 45.0f*/)
+        //    {
+        //        if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
+        //        {
+        //            RigidBody.AddForce(new Vector2(-ClimbForce, 0));
+        //        }
+        //        if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
+        //        {
+        //            RigidBody.AddForce(new Vector2(ClimbForce, 0));
+        //        }
+        //    }
+        //}
+
         if(other.tag == "Item")
         {
             if (HoldingNimotsuNum < MaxNimotsuNum)
