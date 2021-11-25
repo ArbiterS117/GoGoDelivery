@@ -77,6 +77,7 @@ public class player : MonoBehaviour
         StatusUpdate();
 
         playerSub.AnimationUpdate(this, GetComponent<Animator>());
+        playerSub.GrappleUpdate(this);
         //PhysicsUpdate();
     }
 
@@ -143,9 +144,11 @@ public class player : MonoBehaviour
         Vector2 direction = Vector2.down /** RaycastDistance*/;
 
         RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
+
         if (hit.collider != null)
         {
             OnRail = true;
+
 
             if (!OnRailPre)
             {

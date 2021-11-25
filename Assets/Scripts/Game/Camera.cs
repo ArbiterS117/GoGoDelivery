@@ -8,6 +8,7 @@ public class Camera : MonoBehaviour
     public Transform player;
 
     Vector3 oriPos;
+    public Vector3 MouseDeltaPos;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,12 @@ public class Camera : MonoBehaviour
         // Vector3 pos = player.position;
         // pos.z = transform.position.z;
 
-        if (this.tag == "MainCamera") transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+        if (this.tag == "MainCamera")
+        {
+            transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+            transform.position += MouseDeltaPos;
+
+        }
         //transform.position.Set(player.position.x, player.position.y, transform.position.z);
         //transform.position.x = 1.0f;
 

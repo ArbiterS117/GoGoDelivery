@@ -805,9 +805,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: 0
-  Num: 0
-  Speed: 5
-  force: 5
+  Num: 1
+  SpeedUpSpeed: 9.8
+  AirJumpForce: 1982
+  AirDashSpeed: 39.5
+  GrappleLen: 170
 --- !u!1001 &496954100
 PrefabInstance:
   m_ObjectHideFlags: 0
