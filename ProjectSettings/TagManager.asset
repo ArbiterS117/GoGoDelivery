@@ -7,6 +7,8 @@ TagManager:
   - Item
   - customer
   - Start
+  - Platform
+  - Rail
   layers:
   - Default
   - TransparentFX
