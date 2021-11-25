@@ -58,8 +58,6 @@ public class ArrowCtrl : MonoBehaviour
             Quaternion rot = GetComponent<Transform>().rotation;
             if(xx.x <= 0.0f) GetComponent<Transform>().rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
             else GetComponent<Transform>().rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
-
-            Debug.Log(rot);
         }
     }
 }

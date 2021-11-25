@@ -8,6 +8,7 @@ TagManager:
   - customer
   - Start
   - Upgrade
+  - BGCamera
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Ground
   - Rail
   - Item
-  - 
+  - BackGroundSprite
   - 
   - 
   - 
