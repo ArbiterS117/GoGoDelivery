@@ -21,7 +21,8 @@ public class player : MonoBehaviour
     public float AddRailSpeed = 2.0f;
 
     public float Speed;
-    //private int Dir = 1;            // 右
+    public int   playerDir = 1;   // 右
+    Vector3 oriScale;
     public float MaxMoveSpeed = 10.0f;
     public float Decelerate = 0.6f;
 
@@ -49,13 +50,14 @@ public class player : MonoBehaviour
     static public int MaxNimotsuNum = 3;
 
     public Transform[] StartRebornPoint;
-    public Transform[] RebornPoint;
-    public bool[] RebornPointUsed;
+    public bool[] StartRebornPointUsed;
     public Transform[] CRebornPoint;
     public bool[] CRebornPointUsed;
-    public int RebornPointNum;
+    public int CRebornPointNum;
 
-    public GameObject[] NimotsuHolded = new GameObject[MaxNimotsuNum];
+    bool isCargoAreaArrow = false;
+    List<GameObject> ArrowList = new List<GameObject>();
+    List<GameObject> StartArrowList = new List<GameObject>();
 
     float oriGravity = 0.0f;
 
@@ -63,23 +65,17 @@ public class player : MonoBehaviour
     static public int MaxGRailNum = 3;
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
-    //public GameObject[] GRail = new GameObject[MaxGRailNum];
-
-     // Start is called before the first frame update
 
      void Start()
     {
         RigidBody = this.GetComponent<Rigidbody2D>();
         Speed = 0.0f;
-
-        //GameObject x, y, z;
-        for (int i = 0; i < 3; i++)
-        {
-            NimotsuHolded[i] = null;
-        }
-
+      
         oriGravity = RigidBody.gravityScale;
-        RebornPointNum = RebornPoint.Length;
+        CRebornPointNum = CRebornPointUsed.Length;
+
+        oriScale = this.transform.Find("Sprite").localScale;
+
     }
 
     private void FixedUpdate()
@@ -113,17 +109,7 @@ public class player : MonoBehaviour
 
         playerSub.AnimationUpdate(this, GetComponent<Animator>());
         playerSub.GrappleUpdate(this);
-        //PhysicsUpdate();
-
-
-        // 下坡修正
-        //RaycastHit2D hit3 = Physics2D.Raycast(transform.position, Vector2.down, RailLayer);
-        //if (hit3 == false) { }
-        //else
-        //{
-        //    transform.position = hit3.point;
-        //    transform.position = new Vector3(transform.position.x, transform.position.y + RailUpOffSet, transform.position.z);
-        //}        
+       
     }
 
     bool IsGrounded()
@@ -172,6 +158,49 @@ public class player : MonoBehaviour
         {
             usedGrail = 0;
         }
+
+        if (OnRail)
+        {
+            this.GetComponent<Collider2D>().isTrigger = true;
+        }
+        else
+        {
+            this.GetComponent<Collider2D>().isTrigger = false;
+        }
+
+        if (Speed > 0.0f) playerDir = 1;
+        else if (Speed < 0.0f) playerDir = -1;
+        this.transform.Find("Sprite").localScale= new Vector3(oriScale.x * playerDir, oriScale.y, oriScale.z);
+
+        if(HoldingNimotsuNum == 0)
+        {
+            if(isCargoAreaArrow == false)
+            {
+                for (int i = 0; i < StartRebornPoint.Length; i++)
+                {
+                    GameObject arrow = (GameObject)Resources.Load("StartArrow");
+                    GameObject targetArrow = (GameObject)Instantiate(arrow,
+                                                  this.transform.position,
+                                                   Quaternion.identity);
+                    targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;
+                    targetArrow.GetComponent<ArrowCtrl>().Target = StartRebornPoint[i];
+                    StartArrowList.Add(targetArrow);
+                }
+                isCargoAreaArrow = true;
+
+            }
+        }
+        else
+        {
+            for (int i = 0; i < StartArrowList.Count; i++)
+            {
+                GameObject temp = StartArrowList[0];
+                StartArrowList.Remove(temp);
+                Destroy(temp);
+            }
+            isCargoAreaArrow = false;
+        }
+
     }
 
     void PhysicsUpdate()
@@ -196,7 +225,7 @@ public class player : MonoBehaviour
             {
                 RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitCurvedRailJumpForce);
             }
-            else if (((Speed >= 0.0f && RailNormal.x < -0.2f) || (Speed < 0.0f && RailNormal.x > 0.2f)))
+            else if (((Speed >= 0.0f && RailNormal.x < -0.2f) || (Speed < 0.0f && RailNormal.x > 0.2f)) && !OnRailJumpTrigger)
             {
                 RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitRailJumpForce);
             }
@@ -208,14 +237,19 @@ public class player : MonoBehaviour
     {
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down /** RaycastDistance*/;
-
-        RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
-
-        //rot reset
         this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
 
+        RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
         if (hit.collider != null)
         {
+            if (hit.transform.gameObject.layer == 12) // 12: UnPanGround
+            {
+                IsGround = true;
+                OnRail = false;
+                return;
+            }
+       
+
             if (RigidBody.velocity.y <= 0.0f)
             {
                 OnRail = true;
@@ -285,53 +319,49 @@ public class player : MonoBehaviour
         }
         this.transform.Translate(Vector3.right * Speed * Time.deltaTime);
 
-        //if (Speed <= Decelerate && Speed > 0) Speed = 0;
-        //else if (Speed > 0) Speed -= Decelerate;
-
-        //if (Speed >= -Decelerate && Speed < 0) Speed = 0;
-        //else if (Speed < 0) Speed += Decelerate;
+      
     }
 
     //  当たり判定
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //if(other.tag == "Platform")
-        //{
-        //    if(other.transform.rotation.z != 0.0f /*&& other.transform.rotation.z <= 45.0f*/)
-        //    {
-        //        if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
-        //        {
-        //            RigidBody.AddForce(new Vector2(-ClimbForce, 0));
-        //        }
-        //        if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
-        //        {
-        //            RigidBody.AddForce(new Vector2(ClimbForce, 0));
-        //        }
-        //    }
-        //}
+       
 
-        if(other.tag == "Item")
+        if(other.tag == "CargoArea")
         {
+            int targetNeed = 0;
             if (HoldingNimotsuNum < MaxNimotsuNum)
             {
-                for(int i = 0; i < 3; i++)
+                targetNeed = MaxNimotsuNum - HoldingNimotsuNum;
+                HoldingNimotsuNum = MaxNimotsuNum;
+            }
+            //お客様再生
+            for(int i = 0; i < targetNeed; i++)
+            {
+                while (true)
                 {
-                    if (NimotsuHolded[i] == other.gameObject) return;
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    if (NimotsuHolded[i] == null)
+                    int index = (int)Random.Range(0, CRebornPointNum - 0.001f);
+                    if (CRebornPointUsed[index] == false)
                     {
-                        NimotsuHolded[i] = other.gameObject;
-                        other.GetComponent<Renderer>().enabled = false;
-                        HoldingNimotsuNum++;
+                        GameObject customer = (GameObject)Resources.Load("customer");
+                        GameObject target = (GameObject)Instantiate(customer,
+                                                      CRebornPoint[index].position,
+                                                      Quaternion.identity);
+                        CRebornPointUsed[index] = true;
+                        target.GetComponent<Custormer>().index = index;
 
+                        //矢印再生
+                        GameObject arrow = (GameObject)Resources.Load("arrow");
+                        GameObject targetArrow = (GameObject)Instantiate(arrow,
+                                                      this.transform.position,
+                                                       Quaternion.identity);
+                        targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;                      
+                        targetArrow.GetComponent<ArrowCtrl>().Target = CRebornPoint[index];
+                        ArrowList.Add(targetArrow);
+                        target.GetComponent<Custormer>().Arrow = targetArrow;
                         break;
                     }
                 }
-
-                //Destroy(other.gameObject);
 
             }
         }
@@ -339,42 +369,16 @@ public class player : MonoBehaviour
         if(other.tag == "customer")
         {
             if (HoldingNimotsuNum > 0)
-            {
-                for(int i = 0; i < HoldingNimotsuNum; i++)
-                {
-                    if(NimotsuHolded[i].GetComponent<Nimotu>().GGGoal
-                        == other.gameObject)
-                    {
-                        HoldingNimotsuNum--;
-                        Destroy(other.gameObject);
-              
-                        Destroy(NimotsuHolded[i].gameObject);
-                        NimotsuHolded[i] = null;
+            {              
+                HoldingNimotsuNum--;
+                CRebornPointUsed[other.GetComponent<Custormer>().index] = false;
 
-                        //ArrowCtrl.IsArrowed[i] = false;
+                GameObject temp = other.GetComponent<Custormer>().Arrow;
+                ArrowList.Remove(temp);
+                Destroy(temp);
+                Destroy(other.gameObject);                                 
 
-                        score++;
-
-                        //-------------------------生成----------------------------
-                        // 新しいItem生成
-                        GameObject obj = (GameObject)Resources.Load("Nimotu");
-                        GameObject Item = (GameObject)Instantiate(obj,
-                                                      RebornPoint[Random.Range(0, 9 + 1)].position,
-                                                      Quaternion.identity);
-
-                        // 新しい目標生成
-                        GameObject xxx = (GameObject)Resources.Load("customer");
-                        GameObject Goal = (GameObject)Instantiate(xxx,
-                                                      CRebornPoint[Random.Range(0, 9 + 1)].position,
-                                                      Quaternion.identity);
-                        // itemと目標を連結
-                        Item.GetComponent<Nimotu>().GGGoal = Goal;
-
-                        break;
-                    }
-                }
-                //HoldingNimotsuNum--;
-                //HoldingNimotu = false;
+                score++;                                  
             }
         }
     }

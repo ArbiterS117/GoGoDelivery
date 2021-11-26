@@ -17,7 +17,7 @@ public class Camera : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //player.position.x player.position.y, transform.position.z
         //transform.position = player.position;
@@ -30,10 +30,16 @@ public class Camera : MonoBehaviour
             transform.position += MouseDeltaPos;
 
         }
-        //transform.position.Set(player.position.x, player.position.y, transform.position.z);
-        //transform.position.x = 1.0f;
 
-        else if (this.tag == "BGCamera")
+        else if ( this.tag == "BGCamera")
+        {
+            MouseDeltaPos = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().MouseDeltaPos;
+            transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+            transform.position += MouseDeltaPos;
+
+        }
+
+        else if (this.tag == "BGSpriteCamera")
         {
             Vector3 deltaDis = player.position - oriPos;
             deltaDis.y += 50.0f;

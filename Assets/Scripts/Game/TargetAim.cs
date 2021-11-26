@@ -21,7 +21,7 @@ public class TargetAim : MonoBehaviour
     void Update()
     {
         AimPos = Input.mousePosition;
-        this.transform.position = AimPos;
+        this.transform.localPosition = new Vector2( AimPos.x - (Screen.width / 2), AimPos.y - (Screen.height / 2));
         AimPos.x -= (Screen.width / 2);
         AimPos.y -= (Screen.height / 2);
 

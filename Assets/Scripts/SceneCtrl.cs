@@ -28,6 +28,14 @@ public class SceneCtrl : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
             {
+                SceneManager.LoadScene("Tutorial2", LoadSceneMode.Single);
+            }
+        }
+
+        if (scene.name == "Tutorial2")
+        {
+            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            {
                 SceneManager.LoadScene("Game", LoadSceneMode.Single);
             }
         }
@@ -49,5 +57,7 @@ public class SceneCtrl : MonoBehaviour
                 SceneManager.LoadScene("Title", LoadSceneMode.Single);
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
     }
 }

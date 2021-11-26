@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2174819413297967156}
   - component: {fileID: 2174819413297967157}
   - component: {fileID: 2174819413297967158}
+  - component: {fileID: 4601986529291506662}
   m_Layer: 0
   m_Name: customer
   m_TagString: customer
@@ -26,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2174819413297967159}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.330309, y: -1.9744769, z: 11}
+  m_LocalPosition: {x: 0, y: 0, z: 11}
   m_LocalScale: {x: 7, y: 7, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -99,3 +100,17 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.31999996
+--- !u!114 &4601986529291506662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2174819413297967159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d2e7a3141ff4545afc16d0a6f6eea5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: -1
+  Arrow: {fileID: 0}

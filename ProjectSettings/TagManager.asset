@@ -10,6 +10,8 @@ TagManager:
   - Upgrade
   - BGCamera
   - Aim
+  - CargoArea
+  - BGSpriteCamera
   layers:
   - Default
   - TransparentFX
@@ -23,8 +25,8 @@ TagManager:
   - Rail
   - Item
   - BackGroundSprite
-  - 
-  - 
+  - UnPanetrateGround
+  - BGModel
   - 
   - 
   - 
