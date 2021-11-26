@@ -30,5 +30,7 @@ public class TargetAim : MonoBehaviour
         cam.MouseDeltaPos.x += AimPos.x * CameraMovingRate;
         cam.MouseDeltaPos.y += AimPos.y * CameraMovingRate;
 
+       
+
     }
 }

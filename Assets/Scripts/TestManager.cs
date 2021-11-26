@@ -12,26 +12,29 @@ public class TestManager : MonoBehaviour
         GameObject obj = (GameObject)Resources.Load("Nimotu");
 
         // プレハブを元にオブジェクトを生成する
+        player player = GameObject.FindGameObjectWithTag("Player").GetComponent<player>();
+
         GameObject item1 = (GameObject)Instantiate(obj,
-                                                      new Vector3(15.0f, 0.0f, 11.0f),
+                                                      player.StartRebornPoint[0].position,
                                                       Quaternion.identity);
         GameObject item2 = (GameObject)Instantiate(obj,
-                                              new Vector3(5.0f, 10.0f, 11.0f),
+                                              player.StartRebornPoint[1].position,
                                               Quaternion.identity);
         GameObject item3 = (GameObject)Instantiate(obj,
-                                              new Vector3(-15.0f, 0.0f, 11.0f),
+                                              player.StartRebornPoint[2].position,
                                               Quaternion.identity);
 
         // Goal生成
+
         GameObject xxx = (GameObject)Resources.Load("customer");
         GameObject Goal1 = (GameObject)Instantiate(xxx,
-                                      new Vector3(20.0f, 0.0f, 11.0f),
+                                      player.CRebornPoint[0].position,
                                       Quaternion.identity);
         GameObject Goal2 = (GameObject)Instantiate(xxx,
-                              new Vector3(-10f, 0.0f, 11.0f),
+                               player.CRebornPoint[1].position,
                               Quaternion.identity);
         GameObject Goal3 = (GameObject)Instantiate(xxx,
-                                      new Vector3(5.0f, 0.0f, 11.0f),
+                                       player.CRebornPoint[2].position,
                                       Quaternion.identity);
 
         // 連結

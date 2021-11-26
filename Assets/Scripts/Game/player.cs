@@ -9,6 +9,9 @@ public class player : MonoBehaviour
 
     public Rigidbody2D RigidBody = null;
 
+    public Vector2 velocityMax;
+    public Vector2 velocityMin;
+
     //private static const JUMPFORCE = 5.0f;
     public float Jumpforce = 5.0f;
     public bool IsGround = false;
@@ -26,10 +29,17 @@ public class player : MonoBehaviour
     public bool OnRailPre = false;
 
     public float OnRailSpeed = 30.0f;
-    public bool OnRailDir = true;
+    public bool OnRailDir = true;// 1: Right 0: Left
+
+    public float OnRailUpOffset = 2.0f;
 
     public float MaxOnRailSpeed = 40.0f;
     public float MinOnRailSpeed = 20.0f;
+
+    public Vector2 RailNormal　= new Vector2(0.0f, 1.0f);
+    public float ExitRailJumpForce = 25.0f;
+    public float ExitCurvedRailJumpForce = 50.0f;
+    public bool OnRailJumpTrigger = false;
 
     //=========================== game
     public int score = 0;
@@ -38,24 +48,38 @@ public class player : MonoBehaviour
     public int HoldingNimotsuNum = 0;
     static public int MaxNimotsuNum = 3;
 
+    public Transform[] StartRebornPoint;
     public Transform[] RebornPoint;
+    public bool[] RebornPointUsed;
     public Transform[] CRebornPoint;
+    public bool[] CRebornPointUsed;
+    public int RebornPointNum;
 
     public GameObject[] NimotsuHolded = new GameObject[MaxNimotsuNum];
 
-    public float ClimbForce = 25.0f;
-    public float RailUpOffSet = 0.0f;
+    float oriGravity = 0.0f;
 
-    // Start is called before the first frame update
+    //=========================== grapple rail
+    static public int MaxGRailNum = 3;
+    public int usedGrail = 0;
+    public List<GameObject> GRail = new List<GameObject>();
+    //public GameObject[] GRail = new GameObject[MaxGRailNum];
 
-    void Start()
+     // Start is called before the first frame update
+
+     void Start()
     {
         RigidBody = this.GetComponent<Rigidbody2D>();
         Speed = 0.0f;
 
         //GameObject x, y, z;
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
+        {
             NimotsuHolded[i] = null;
+        }
+
+        oriGravity = RigidBody.gravityScale;
+        RebornPointNum = RebornPoint.Length;
     }
 
     private void FixedUpdate()
@@ -64,6 +88,11 @@ public class player : MonoBehaviour
         else OnRailPhysicsUpdate();
 
         OnRailPre = OnRail;
+
+        //速度制限
+        float vx = Mathf.Clamp(RigidBody.velocity.x, velocityMin.x, velocityMax.x);
+        float vy = Mathf.Clamp(RigidBody.velocity.y, velocityMin.y, velocityMax.y);
+        RigidBody.velocity = new Vector2(vx, vy);
     }
 
     // Update is called once per frame
@@ -71,31 +100,8 @@ public class player : MonoBehaviour
     {
         IsGround = IsGrounded();   
         OnRailCheck();
-
-        // 斜面检测
-        RaycastHit2D hit1 = Physics2D.Raycast(transform.position, Vector2.down, RaycastDistance, GroundLayer);
-        if (hit1 == false) { }
-
-        else if (hit1.transform.rotation.z != 0)
-        {
-            if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
-            {
-                RigidBody.AddForce(new Vector2(-ClimbForce, 0));
-            }
-            if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
-            {
-                RigidBody.AddForce(new Vector2(ClimbForce, 0));
-            }
-        }
-
-        RaycastHit2D hit2 = Physics2D.Raycast(transform.position, Vector2.down, RaycastDistance, RailLayer);
-        if (hit2 == false) { }
-
-        else if (hit2.transform.rotation.z != 0)
-        {
-            RigidBody.gravityScale = 0;
-        }
-
+        if (OnRail) RigidBody.gravityScale = 0.0f;
+        else RigidBody.gravityScale = oriGravity;
 
         ///============================================================
         if (!OnRail)
@@ -132,7 +138,6 @@ public class player : MonoBehaviour
             return true;
         }
 
-        RigidBody.gravityScale = 8.0f;
         return false;
     }
 
@@ -141,24 +146,32 @@ public class player : MonoBehaviour
         if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
         {
             this.Speed -= AddSpeed;
+            OnRailDir = false;
         }
         if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
         {
             this.Speed += AddSpeed;
+            OnRailDir = true;
+
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (IsGround) 
             {
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
                 RigidBody.AddForce(new Vector2(0, Jumpforce));
             }
+           
         }
     }
 
     void StatusUpdate()
     {
-       
+        if (IsGround)
+        {
+            usedGrail = 0;
+        }
     }
 
     void PhysicsUpdate()
@@ -168,13 +181,26 @@ public class player : MonoBehaviour
 
         this.transform.Translate(Vector3.right * Speed * Time.deltaTime);
 
-        if (Speed <= Decelerate && Speed > 0) Speed = 0;
-        else if (Speed > 0) Speed -= Decelerate;
+        if (Speed <= Decelerate * Time.deltaTime && Speed > 0) Speed = 0;
+        else if (Speed > 0) Speed -= Decelerate * Time.deltaTime;
 
-        if (Speed >= -Decelerate && Speed < 0) Speed = 0;
-        else if (Speed < 0) Speed += Decelerate;
+        if (Speed >= -Decelerate * Time.deltaTime && Speed < 0) Speed = 0;
+        else if (Speed < 0) Speed += Decelerate * Time.deltaTime;
 
-        
+        //Exit Rail
+        if (OnRailPre)
+        {
+            RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.0f);
+            //jump
+            if (((Speed >= 0.0f && RailNormal.x < -0.7f) || (Speed < 0.0f && RailNormal.x > 0.7f) ) && !OnRailJumpTrigger)
+            {
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitCurvedRailJumpForce);
+            }
+            else if (((Speed >= 0.0f && RailNormal.x < -0.2f) || (Speed < 0.0f && RailNormal.x > 0.2f)))
+            {
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitRailJumpForce);
+            }
+        }
 
     }
 
@@ -185,24 +211,42 @@ public class player : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
 
+        //rot reset
+        this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
+
         if (hit.collider != null)
         {
-            OnRail = true;
-
-
-            if (!OnRailPre)
+            if (RigidBody.velocity.y <= 0.0f)
             {
-                if (Speed < 0)
-                {
-                    Speed = -OnRailSpeed;
-                    OnRailDir = false;
-                }
-                else
-                {
-                    Speed = OnRailSpeed;
-                    OnRailDir = true;
-                }
+                OnRail = true;
+                OnRailJumpTrigger = false;
             }
+
+            if (OnRail == true)
+            {
+                //Rect 角
+                if(Vector2.Dot(RailNormal,hit.normal) <= 0.2f)
+                {
+                    OnRail = false;
+                    return;
+                }
+
+                RailNormal = hit.normal;
+
+
+                //pos & rot
+                Vector3 pos = transform.position;
+                Vector2 UpOffset = hit.normal * OnRailUpOffset;
+                this.transform.position = new Vector3(hit.point.x , hit.point.y + OnRailUpOffset, pos.z);
+
+                Quaternion rot = GetComponent<Transform>().rotation;
+                Vector2 up = new Vector2(0, 1);
+                var angle = Vector2.Angle(up, hit.normal);
+                if (hit.normal.x <= 0.0f) this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
+                else this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
+            }
+
+
         }
         else OnRail = false;
     }
@@ -221,7 +265,10 @@ public class player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //if (!IsGround) return;
+            RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
             RigidBody.AddForce(new Vector2(0, Jumpforce));
+            OnRail = false;
+            OnRailJumpTrigger = true;
         }
     }
     void OnRailPhysicsUpdate()
