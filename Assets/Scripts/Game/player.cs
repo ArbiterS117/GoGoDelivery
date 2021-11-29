@@ -77,7 +77,7 @@ public class player : MonoBehaviour
 
     //=========================== Useful Rail Charge Timer
     static public int RailChargeTime = 3 * 60;
-    public int Rail_CTimer = 0;
+    public float Rail_CTimer = 0;
 
     void Start()
     {
@@ -169,7 +169,7 @@ public class player : MonoBehaviour
     {
         if (IsGround)
         {
-            Rail_CTimer++;
+            Rail_CTimer += Time.deltaTime;
             if(Rail_CTimer >= RailChargeTime)
             {
                 usedGrail--;
