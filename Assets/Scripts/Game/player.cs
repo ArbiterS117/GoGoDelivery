@@ -66,7 +66,11 @@ public class player : MonoBehaviour
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
 
-     void Start()
+    //=========================== Useful Rail Charge Timer
+    static public int RailChargeTime = 3 * 60;
+    public int Rail_CTimer = 0;
+
+    void Start()
     {
         RigidBody = this.GetComponent<Rigidbody2D>();
         Speed = 0.0f;
@@ -156,7 +160,15 @@ public class player : MonoBehaviour
     {
         if (IsGround)
         {
-            usedGrail = 0;
+            Rail_CTimer++;
+            if(Rail_CTimer >= RailChargeTime)
+            {
+                usedGrail--;
+                if (usedGrail < 0) usedGrail = 0;
+                Rail_CTimer = 0;
+            }
+
+            //usedGrail = 0;
         }
 
         if (OnRail)
