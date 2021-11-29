@@ -38,21 +38,26 @@ public class playerSub : MonoBehaviour
     {
         if (player.usedGrail >= player.MaxGRailNum) return;
 
-        if (Input.GetMouseButtonDown(0))
-        {          
-            if (player.GRail.Count < player.MaxGRailNum)
+        if(Input.GetMouseButton(0))
+        {
+            if (player.CanStoreEnergy == true)
             {
-                player.GRail.Add(ShootGrapple(player));
-                player.usedGrail += 1;
+                player.GrailEnergy += player.EnergyStore * Time.deltaTime;
+                if (player.GrailEnergy >= player.MaxGrailEnergy)
+                {
+                    player.CanStoreEnergy = false;
+                    MouseUp(player);
+                }
             }
-            else
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (player.CanStoreEnergy == true)
             {
-                GameObject temp = player.GRail[0];
-                player.GRail.Remove(player.GRail[0]);
-                GameObject.Destroy(temp);
-                player.GRail.Add(ShootGrapple(player));
-                player.usedGrail += 1;
+                MouseUp(player);
             }
+            player.CanStoreEnergy = true;
         }
 
 
@@ -66,10 +71,10 @@ public class playerSub : MonoBehaviour
         else { player.OnRailDir = false; dir = -1; }
 
         Vector2 AimPos = new Vector2(Aim.AimPos.x, Aim.AimPos.y);
-        Vector2 up = new Vector2(1, 0);
-        var angle = Vector2.Angle(up, AimPos);
+        Vector2 right = new Vector2(1, 0);
+        var angle = Vector2.Angle(right, AimPos);
 
-        if (angle >= 40.0f && angle <= 140.0f && AimPos.y > 0.0f) // Verticle
+        if (angle >= 30.0f && angle <= 150.0f && AimPos.y > 0.0f) // Verticle
         {
             GameObject obj = (GameObject)Resources.Load("CurveRail");
             GameObject Item = (GameObject)Instantiate(obj,
@@ -80,11 +85,11 @@ public class playerSub : MonoBehaviour
             Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 2.0f, ItemPosOri.z);
             EdgeCollider2D EdgeCollider = Item.GetComponent<EdgeCollider2D>();
             float vx = 0.0f, vy = 0.0f;
-            float radius = 15.0f;
+            float radius = 15.0f / player.GrailEnergy;
             List<Vector2> newPoint = new List<Vector2>();
             for (int i = 0; i < EdgeCollider.pointCount; i++) {
-                float perSinAngle = Mathf.Sin((Mathf.PI * 0.3f) / (EdgeCollider.pointCount - 2) * i);
-                float perCosAngle = Mathf.Cos((Mathf.PI * 0.3f) / (EdgeCollider.pointCount - 2) * i);
+                float perSinAngle = Mathf.Sin((Mathf.PI * 0.25f * player.GrailEnergy) / (EdgeCollider.pointCount - 2) * i);
+                float perCosAngle = Mathf.Cos((Mathf.PI * 0.25f * player.GrailEnergy) / (EdgeCollider.pointCount - 2) * i);
                      if (i == 0) { vx = -2.5f * dir; vy = -2.0f; newPoint.Add(new Vector2(vx, vy)); }
                 else if (i == 1) { vx =  2.5f * dir; vy = -2.0f; newPoint.Add(new Vector2(vx, vy)); }
                 else { vx = 2.5f * dir + radius * perSinAngle * dir; vy = -2.0f + radius - (radius * perCosAngle); newPoint.Add(new Vector2(vx, vy)); }
@@ -107,7 +112,7 @@ public class playerSub : MonoBehaviour
                                                                 Quaternion.identity);
                 sprite.transform.SetParent(Item.transform);
                 //angle
-                float sAngle = Vector2.Angle(up, EdgeCollider.points[i] - EdgeCollider.points[i - 1]);
+                float sAngle = Vector2.Angle(right, EdgeCollider.points[i] - EdgeCollider.points[i - 1]);
                 Quaternion rot = sprite.transform.rotation;
                 sprite.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, sAngle));
                 //scale
@@ -128,16 +133,40 @@ public class playerSub : MonoBehaviour
                                                           player.transform.position,
                                                           Quaternion.identity);
             // Angle & position currection
-
             Quaternion rot = Item.transform.rotation;
             if (AimPos.y <= 0.0f) Item.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
             else Item.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
             Vector3 ItemPosOri = Item.transform.position;
             Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 4.0f, ItemPosOri.z);
+
+            //Scaleing
+            Vector3 scl = Item.transform.localScale;
+            Item.transform.localScale = new Vector3(scl.x * player.GrailEnergy, scl.y, scl.z);
+
             return Item;
+
 
         }
 
+
+    }
+
+    static void MouseUp(player player)
+    {
+        if (player.GRail.Count < player.MaxGRailNum)
+        {
+            player.GRail.Add(ShootGrapple(player));
+            player.usedGrail += 1;
+        }
+        else
+        {
+            GameObject temp = player.GRail[0];
+            player.GRail.Remove(player.GRail[0]);
+            GameObject.Destroy(temp);
+            player.GRail.Add(ShootGrapple(player));
+            player.usedGrail += 1;
+        }
+        player.GrailEnergy = player.oriGrailEnergy;
 
     }
 

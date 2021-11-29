@@ -6908,6 +6908,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
         type: 3}
+      propertyPath: EnergyStore
+      value: 0.509
+      objectReference: {fileID: 0}
+    - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
+        type: 3}
       propertyPath: RailNormal.y
       value: 1
       objectReference: {fileID: 0}
@@ -6974,7 +6979,7 @@ PrefabInstance:
     - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
         type: 3}
       propertyPath: ExitCurvedRailJumpForce
-      value: 50
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
         type: 3}

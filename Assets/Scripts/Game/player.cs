@@ -39,6 +39,7 @@ public class player : MonoBehaviour
 
     public Vector2 RailNormal　= new Vector2(0.0f, 1.0f);
     public float ExitRailJumpForce = 25.0f;
+    [Range(40f, 100.0f)]
     public float ExitCurvedRailJumpForce = 50.0f;
     public bool OnRailJumpTrigger = false;
 
@@ -65,6 +66,14 @@ public class player : MonoBehaviour
     static public int MaxGRailNum = 3;
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
+    public float GrailEnergy = 1.0f;    // defult : 1.0
+    public float oriGrailEnergy = 1.0f; // defult : 1.0
+    [Range(1.0f, 3.0f)]
+    public float MaxGrailEnergy = 2.0f;    // defult : 2.0
+    [Range(0f, 2.0f)]
+    public float EnergyStore = 0.01f;  // defult : 1.0
+    public bool CanStoreEnergy = true;
+    public float CaculatedJumpForce = 1.0f;
 
     //=========================== Useful Rail Charge Timer
     static public int RailChargeTime = 3 * 60;
@@ -79,7 +88,7 @@ public class player : MonoBehaviour
         CRebornPointNum = CRebornPointUsed.Length;
 
         oriScale = this.transform.Find("Sprite").localScale;
-
+        oriGrailEnergy = GrailEnergy;
     }
 
     private void FixedUpdate()
@@ -235,7 +244,8 @@ public class player : MonoBehaviour
             //jump
             if (((Speed >= 0.0f && RailNormal.x < -0.7f) || (Speed < 0.0f && RailNormal.x > 0.7f) ) && !OnRailJumpTrigger)
             {
-                RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitCurvedRailJumpForce);
+                CaculatedJumpForce = Mathf.Abs(RailNormal.x) * ExitCurvedRailJumpForce * 2 - ExitCurvedRailJumpForce;
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, CaculatedJumpForce);
             }
             else if (((Speed >= 0.0f && RailNormal.x < -0.2f) || (Speed < 0.0f && RailNormal.x > 0.2f)) && !OnRailJumpTrigger)
             {
