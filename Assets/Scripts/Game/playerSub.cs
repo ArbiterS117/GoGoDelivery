@@ -42,6 +42,7 @@ public class playerSub : MonoBehaviour
         {
             if (player.CanStoreEnergy == true)
             {
+                player.IsShooting = true;
                 player.GrailEnergy += player.EnergyStore * Time.deltaTime;
                 if (player.GrailEnergy >= player.MaxGrailEnergy)
                 {
@@ -166,7 +167,6 @@ public class playerSub : MonoBehaviour
             player.GRail.Add(ShootGrapple(player));
             player.usedGrail += 1;
         }
-        player.GrailEnergy = player.oriGrailEnergy;
 
     }
 

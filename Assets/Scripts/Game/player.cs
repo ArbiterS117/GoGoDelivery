@@ -24,6 +24,7 @@ public class player : MonoBehaviour
     public int   playerDir = 1;   // 右
     Vector3 oriScale;
     public float MaxMoveSpeed = 10.0f;
+    public float oriMaxMoveSpeed = 10.0f;
     public float Decelerate = 0.6f;
 
     public bool OnRail = false;
@@ -72,8 +73,11 @@ public class player : MonoBehaviour
     public float MaxGrailEnergy = 2.0f;    // defult : 2.0
     [Range(0f, 2.0f)]
     public float EnergyStore = 0.01f;  // defult : 1.0
-    public bool CanStoreEnergy = true;
+    public bool  CanStoreEnergy = true;
     public float CaculatedJumpForce = 1.0f;
+    public bool  IsShooting = false;
+    public float ShootingGravity = 0.5f;
+    public float ShootingMAXSpeed = 0.5f;
 
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
@@ -109,8 +113,20 @@ public class player : MonoBehaviour
     {
         IsGround = IsGrounded();   
         OnRailCheck();
-        if (OnRail) RigidBody.gravityScale = 0.0f;
-        else RigidBody.gravityScale = oriGravity;
+        if (OnRail)
+        {
+            RigidBody.gravityScale = 0.0f;
+        }
+        else if (IsShooting)
+        {
+            RigidBody.gravityScale = ShootingGravity;
+            MaxMoveSpeed = ShootingMAXSpeed;
+        }
+        else
+        {
+            RigidBody.gravityScale = oriGravity;
+            MaxMoveSpeed = oriMaxMoveSpeed;
+        }
 
         ///============================================================
         if (!OnRail)
