@@ -3113,6 +3113,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CargoArea
       objectReference: {fileID: 0}
+    - target: {fileID: 2421788863899661841, guid: b15d1cf7292a1d342a8a362dc7e94f53,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2421788863899661843, guid: b15d1cf7292a1d342a8a362dc7e94f53,
         type: 3}
       propertyPath: m_RootOrder

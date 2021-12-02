@@ -139,7 +139,7 @@ public class player : MonoBehaviour
                 //pos & rot
                 Vector3 pos = transform.position;
                 Vector2 UpOffset = hit.normal * OnRailUpOffset;
-                this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
+                //this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
 
                 Quaternion rot = GetComponent<Transform>().rotation;
                 Vector2 up = new Vector2(0, 1);
