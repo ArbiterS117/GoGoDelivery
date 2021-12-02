@@ -76,7 +76,7 @@ public class player : MonoBehaviour
     public float CaculatedJumpForce = 1.0f;
 
     //=========================== Useful Rail Charge Timer
-    static public int RailChargeTime = 3 * 60;
+    public float RailChargeTime = 1;
     public float Rail_CTimer = 0;
 
     void Start()
@@ -134,6 +134,19 @@ public class player : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, GroundLayer);
         if (hit.collider != null)
         {
+            if (IsGround && !OnRail)
+            {
+                //pos & rot
+                Vector3 pos = transform.position;
+                Vector2 UpOffset = hit.normal * OnRailUpOffset;
+                this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
+
+                Quaternion rot = GetComponent<Transform>().rotation;
+                Vector2 up = new Vector2(0, 1);
+                var angle = Vector2.Angle(up, hit.normal);
+                if (hit.normal.x <= 0.0f) this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
+                else this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
+            }
             return true;
         }
 
@@ -347,7 +360,6 @@ public class player : MonoBehaviour
     //  当たり判定
     private void OnTriggerEnter2D(Collider2D other)
     {
-       
 
         if(other.tag == "CargoArea")
         {

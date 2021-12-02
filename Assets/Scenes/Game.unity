@@ -6943,8 +6943,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
         type: 3}
+      propertyPath: RailChargeTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
+        type: 3}
       propertyPath: RaycastDistance
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7723943952047840789, guid: c5fcd199053e94e4a8ac4ffd9f4c0a46,
         type: 3}
