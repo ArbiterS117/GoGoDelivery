@@ -179,4 +179,25 @@ public class playerSub : MonoBehaviour
     }
 
 
+    public static void ParticleUpdate(player player)
+    {
+        ParticleSystem[] ps = player.GetComponentsInChildren<ParticleSystem>();
+        for (int i = 0; i < ps.Length; i++)
+        {
+            Vector3 scl = ps[i].transform.localScale;
+            if(player.OnRailDir) ps[i].transform.localScale = new Vector3(scl.x, scl.y, 1.0f);
+            else                 ps[i].transform.localScale = new Vector3(scl.x, scl.y,-1.0f);
+
+            if (player.OnRail)
+            {
+                if (ps[i].isStopped) ps[i].Play();
+            }
+            else
+            {
+                if (ps[i].isPlaying) ps[i].Stop();
+            }
+        }
+      
+    }
+
 }

@@ -18,8 +18,6 @@ public class GrappleRail : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == 9) Debug.Log("111");
-
         //9 = rail
         if (other.gameObject.layer == 9)
         {
