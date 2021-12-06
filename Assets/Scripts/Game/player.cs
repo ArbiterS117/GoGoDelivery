@@ -78,6 +78,8 @@ public class player : MonoBehaviour
     public bool  IsShooting = false;
     public float ShootingGravity = 0.5f;
     public float ShootingMAXSpeed = 0.5f;
+    public bool  ShootingJump = false;
+    public float ShootingJumpVelocity = 5.0f;
 
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;

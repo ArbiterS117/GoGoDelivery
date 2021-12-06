@@ -42,6 +42,11 @@ public class playerSub : MonoBehaviour
         {
             if (player.CanStoreEnergy == true)
             {
+                if(player.ShootingJump == false)
+                {
+                    player.ShootingJump = true; 
+                    player.RigidBody.velocity = new Vector2(player.RigidBody.velocity.x, player.ShootingJumpVelocity);
+                }
                 player.IsShooting = true;
                 player.GrailEnergy += player.EnergyStore * Time.deltaTime;
                 if (player.GrailEnergy >= player.MaxGrailEnergy)
@@ -169,6 +174,7 @@ public class playerSub : MonoBehaviour
         }
         player.IsShooting = false;
         player.GrailEnergy = player.oriGrailEnergy;
+        player.ShootingJump = false;
 
     }
 
