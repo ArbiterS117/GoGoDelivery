@@ -167,6 +167,8 @@ public class playerSub : MonoBehaviour
             player.GRail.Add(ShootGrapple(player));
             player.usedGrail += 1;
         }
+        player.IsShooting = false;
+        player.GrailEnergy = player.oriGrailEnergy;
 
     }
 
