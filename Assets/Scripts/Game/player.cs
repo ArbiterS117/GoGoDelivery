@@ -312,7 +312,7 @@ public class player : MonoBehaviour
             if (OnRail == true)
             {
                 //Rect 角
-                if(Vector2.Dot(RailNormal,hit.normal) <= 0.2f)
+                if (Vector2.Dot(RailNormal, hit.normal) <= 0.2f)
                 {
                     OnRail = false;
                     return;
