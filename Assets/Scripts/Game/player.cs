@@ -25,7 +25,7 @@ public class player : MonoBehaviour
     Vector3 oriScale;
     public float MaxMoveSpeed = 10.0f;
     public float oriMaxMoveSpeed = 10.0f;
-    public float Decelerate = 0.6f;
+    public float Decelerate = 15.0f;
 
     public bool OnRail = false;
     public bool OnRailPre = false;
@@ -77,9 +77,10 @@ public class player : MonoBehaviour
     public float CaculatedJumpForce = 1.0f;
     public bool  IsShooting = false;
     public float ShootingGravity = 0.5f;
-    public float ShootingMAXSpeed = 0.5f;
     public bool  ShootingJump = false;
     public float ShootingJumpVelocity = 5.0f;
+    public float ShootingAddSpeed = 0.1f;
+    public float ShootingDecelerate = 30.0f;
 
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
@@ -122,7 +123,7 @@ public class player : MonoBehaviour
         else if (IsShooting)
         {
             RigidBody.gravityScale = ShootingGravity;
-            MaxMoveSpeed = ShootingMAXSpeed;
+            //MaxMoveSpeed = ShootingMAXSpeed;
         }
         else
         {
@@ -140,6 +141,7 @@ public class player : MonoBehaviour
 
         playerSub.AnimationUpdate(this, GetComponent<Animator>());
         playerSub.GrappleUpdate(this);
+        playerSub.ParticleUpdate(this);
        
     }
 
@@ -175,13 +177,13 @@ public class player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
         {
-            this.Speed -= AddSpeed;
-            OnRailDir = false;
+            if(IsShooting)this.Speed -= ShootingAddSpeed;
+            else          this.Speed -= AddSpeed;           
         }
         if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
         {
-            this.Speed += AddSpeed;
-            OnRailDir = true;
+            if(IsShooting)this.Speed += ShootingAddSpeed;
+            else          this.Speed += AddSpeed;
 
         }
 
@@ -262,11 +264,22 @@ public class player : MonoBehaviour
 
         this.transform.Translate(Vector3.right * Speed * Time.deltaTime);
 
-        if (Speed <= Decelerate * Time.deltaTime && Speed > 0) Speed = 0;
-        else if (Speed > 0) Speed -= Decelerate * Time.deltaTime;
+        if (IsShooting)
+        {
+            if (Speed <= ShootingDecelerate * Time.deltaTime && Speed > 0) Speed = 0;
+            else if (Speed > 0) Speed -= ShootingDecelerate * Time.deltaTime;
 
-        if (Speed >= -Decelerate * Time.deltaTime && Speed < 0) Speed = 0;
-        else if (Speed < 0) Speed += Decelerate * Time.deltaTime;
+            if (Speed >= -ShootingDecelerate * Time.deltaTime && Speed < 0) Speed = 0;
+            else if (Speed < 0) Speed += ShootingDecelerate * Time.deltaTime;
+        }
+        else
+        {
+            if (Speed <= Decelerate * Time.deltaTime && Speed > 0) Speed = 0;
+            else if (Speed > 0) Speed -= Decelerate * Time.deltaTime;
+
+            if (Speed >= -Decelerate * Time.deltaTime && Speed < 0) Speed = 0;
+            else if (Speed < 0) Speed += Decelerate * Time.deltaTime;
+        }
 
         //Exit Rail
         if (OnRailPre)
@@ -306,6 +319,8 @@ public class player : MonoBehaviour
             if (RigidBody.velocity.y <= 0.0f)
             {
                 OnRail = true;
+                if(playerDir == 1) OnRailDir = true;
+                if(playerDir ==-1) OnRailDir = false;
                 OnRailJumpTrigger = false;
             }
 
@@ -319,7 +334,6 @@ public class player : MonoBehaviour
                 }
 
                 RailNormal = hit.normal;
-
 
                 //pos & rot
                 Vector3 pos = transform.position;
