@@ -64,6 +64,7 @@ public class player : MonoBehaviour
     float oriGravity = 0.0f;
 
     //=========================== grapple rail
+    [Header("grapple rail")]
     static public int MaxGRailNum = 3;
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
@@ -85,6 +86,11 @@ public class player : MonoBehaviour
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
     public float Rail_CTimer = 0;
+
+    //=========================== Effect Prefab
+    [Header("Effect Prefab")]
+    public GameObject CargoEffect;
+    public GameObject CustormerEffect;
 
     void Start()
     {
@@ -285,6 +291,7 @@ public class player : MonoBehaviour
         if (OnRailPre)
         {
             RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.0f);
+
             //jump
             if (((Speed >= 0.0f && RailNormal.x < -0.7f) || (Speed < 0.0f && RailNormal.x > 0.7f) ) && !OnRailJumpTrigger)
             {
@@ -418,6 +425,10 @@ public class player : MonoBehaviour
                         targetArrow.GetComponent<ArrowCtrl>().Target = CRebornPoint[index];
                         ArrowList.Add(targetArrow);
                         target.GetComponent<Custormer>().Arrow = targetArrow;
+
+                        //エフェクト
+                        GameObject effect = Instantiate(CargoEffect, this.transform.position, Quaternion.identity) as GameObject;
+
                         break;
                     }
                 }
@@ -437,7 +448,10 @@ public class player : MonoBehaviour
                 Destroy(temp);
                 Destroy(other.gameObject);                                 
 
-                score++;                                  
+                score++;
+
+                //エフェクト
+                GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
             }
         }
     }
