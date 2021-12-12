@@ -83,6 +83,19 @@ public class player : MonoBehaviour
     public float ShootingAddSpeed = 0.1f;
     public float ShootingDecelerate = 30.0f;
 
+    //=========================== Boost
+    [Header("Boost")]
+    public bool IsBoosting = false;
+    public float BoostMaxSpeed = 60.0f;
+    public float BoostTime = 1.5f;
+    public float BoostCTime = 0.0f;
+    public GameObject BoostEffect;
+
+    //=========================== Dashing
+    public float DashEffectOutTime =  0.3f;
+    public float DashEffectOutCTime = 0.0f;
+    public GameObject DashEffect;
+    
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
     public float Rail_CTimer = 0;
@@ -120,6 +133,8 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
+
         IsGround = IsGrounded();   
         OnRailCheck();
         if (OnRail)
@@ -131,7 +146,7 @@ public class player : MonoBehaviour
             RigidBody.gravityScale = ShootingGravity;
             //MaxMoveSpeed = ShootingMAXSpeed;
         }
-        else
+        else 
         {
             RigidBody.gravityScale = oriGravity;
             MaxMoveSpeed = oriMaxMoveSpeed;
@@ -153,6 +168,8 @@ public class player : MonoBehaviour
 
     bool IsGrounded()
     {
+        if (RigidBody.velocity.y > 0.0f) return false;
+
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down * RaycastDistance;
 
@@ -162,16 +179,20 @@ public class player : MonoBehaviour
         {
             if (IsGround && !OnRail)
             {
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.0f);
+
                 //pos & rot
                 Vector3 pos = transform.position;
                 Vector2 UpOffset = hit.normal * OnRailUpOffset;
-                //this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
+                this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
 
                 Quaternion rot = GetComponent<Transform>().rotation;
                 Vector2 up = new Vector2(0, 1);
                 var angle = Vector2.Angle(up, hit.normal);
                 if (hit.normal.x <= 0.0f) this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
                 else this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
+
+                
             }
             return true;
         }
@@ -193,6 +214,14 @@ public class player : MonoBehaviour
 
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            IsBoosting = true;
+            Speed = BoostMaxSpeed * playerDir;
+            //エフェクト
+            GameObject effect = Instantiate(BoostEffect, this.transform.position, Quaternion.Euler(new Vector3(0.0f, 90.0f * playerDir, 0.0f))) as GameObject;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (IsGround) 
@@ -208,6 +237,8 @@ public class player : MonoBehaviour
     {
         if (IsGround)
         {
+            RigidBody.gravityScale = 0.0f;
+
             Rail_CTimer += Time.deltaTime;
             if(Rail_CTimer >= RailChargeTime)
             {
@@ -216,8 +247,8 @@ public class player : MonoBehaviour
                 Rail_CTimer = 0;
             }
 
-            //usedGrail = 0;
         }
+      
 
         if (OnRail)
         {
@@ -259,6 +290,28 @@ public class player : MonoBehaviour
                 Destroy(temp);
             }
             isCargoAreaArrow = false;
+        }
+
+        //==============Boosting
+        if (IsBoosting)
+        {
+            MaxMoveSpeed = BoostMaxSpeed;
+            BoostCTime += Time.deltaTime;
+            if(BoostCTime >= BoostTime)
+            {
+                BoostCTime = 0.0f;
+                IsBoosting = false;
+                MaxMoveSpeed = oriMaxMoveSpeed;
+            }
+
+            //==Dash Effect
+            DashEffectOutCTime += Time.deltaTime;
+            if(DashEffectOutCTime >= DashEffectOutTime)
+            {
+                //エフェクト
+                GameObject effect = Instantiate(DashEffect, this.transform.position, Quaternion.Euler(new Vector3(0.0f, -90.0f * playerDir, 0.0f))) as GameObject;
+                DashEffectOutCTime = 0.0f;
+            }
         }
 
     }
@@ -310,16 +363,19 @@ public class player : MonoBehaviour
     {
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down /** RaycastDistance*/;
-        this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
+        //this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
 
         RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
         if (hit.collider != null)
         {
             if (hit.transform.gameObject.layer == 12) // 12: UnPanGround
             {
-                IsGround = true;
-                OnRail = false;
-                return;
+                if (RigidBody.velocity.y <= 0.0f)
+                {
+                    IsGround = true;
+                    OnRail = false;
+                    return;
+                }
             }
        
 
@@ -370,6 +426,12 @@ public class player : MonoBehaviour
             RigidBody.AddForce(new Vector2(0, Jumpforce));
             OnRail = false;
             OnRailJumpTrigger = true;
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            IsBoosting = true;
+            Speed = BoostMaxSpeed * playerDir;
         }
     }
     void OnRailPhysicsUpdate()

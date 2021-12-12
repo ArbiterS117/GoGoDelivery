@@ -9,6 +9,7 @@ public class Camera : MonoBehaviour
 
     Vector3 oriPos;
     public Vector3 MouseDeltaPos;
+    public float UpDis = 7.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +27,7 @@ public class Camera : MonoBehaviour
 
         if (this.tag == "MainCamera")
         {
-            transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+            transform.position = new Vector3(player.position.x, player.position.y + UpDis, transform.position.z);
             transform.position += MouseDeltaPos;
 
         }
@@ -34,7 +35,7 @@ public class Camera : MonoBehaviour
         else if ( this.tag == "BGCamera")
         {
             MouseDeltaPos = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().MouseDeltaPos;
-            transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+            transform.position = new Vector3(player.position.x, player.position.y + UpDis, transform.position.z);
             transform.position += MouseDeltaPos;
 
         }

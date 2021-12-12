@@ -30,6 +30,7 @@ public class playerSub : MonoBehaviour
         animator.SetFloat("SpeedX", Mathf.Abs(player.Speed));
         animator.SetFloat("SpeedY", player.RigidBody.velocity.y);
 
+
         if (player.IsGround) animator.SetBool("Ground",true);
         else animator.SetBool("Ground", false);
     }
