@@ -12,6 +12,8 @@ TagManager:
   - Aim
   - CargoArea
   - BGSpriteCamera
+  - FxTemporaire
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -27,7 +29,7 @@ TagManager:
   - BackGroundSprite
   - UnPanetrateGround
   - BGModel
-  - 
+  - Wall
   - 
   - 
   - 

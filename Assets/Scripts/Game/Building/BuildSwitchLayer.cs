@@ -8,8 +8,7 @@ public class BuildSwitchLayer : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            this.transform.Find("Hospital").gameObject.layer = 0;
-            this.transform.Find("y_board").gameObject.layer = 0;
+            other.transform.Find("Sprite").gameObject.layer = 13;
         }
     }
 
@@ -17,8 +16,7 @@ public class BuildSwitchLayer : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            this.transform.Find("Hospital").gameObject.layer = 13;
-            this.transform.Find("y_board").gameObject.layer = 13;
+            other.transform.Find("Sprite").gameObject.layer = 0;
         }
     }
 }

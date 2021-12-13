@@ -95,7 +95,11 @@ public class player : MonoBehaviour
     public float DashEffectOutTime =  0.3f;
     public float DashEffectOutCTime = 0.0f;
     public GameObject DashEffect;
-    
+
+    //=========================== WallJump
+    public float WallJumpSpeed = 30.0f;
+    public float WallJumpForce = 5.0f;
+
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
     public float Rail_CTimer = 0;
@@ -514,6 +518,24 @@ public class player : MonoBehaviour
 
                 //エフェクト
                 GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
+            }
+        }
+    }
+
+    //======Collision
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.transform.tag == "Wall")
+        {
+            if (IsBoosting && Mathf.Abs(Speed) >= WallJumpSpeed)
+            {
+                Speed *= -1 * 0.5f;
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
+                RigidBody.AddForce(new Vector2(0, WallJumpForce));
+            }
+            else
+            {
+                Speed = 0.0f;
             }
         }
     }
