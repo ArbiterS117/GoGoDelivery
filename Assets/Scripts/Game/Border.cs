@@ -8,7 +8,7 @@ public class Border : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            other.transform.position = new Vector3(0, 0, other.transform.position.z);
+            other.transform.position = other.GetComponent<player>().savepoint[other.GetComponent<player>().CurSavePoint].position;
         }
     }
 }

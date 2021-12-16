@@ -19,14 +19,14 @@ public class SceneCtrl : MonoBehaviour
         Scene scene = SceneManager.GetActiveScene();
 
         if (scene.name == "Title"){
-            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1)){
+            if (Input.GetKeyDown(KeyCode.Return) ){
                 SceneManager.LoadScene("Tutorial", LoadSceneMode.Single);
             }
         }
 
         if (scene.name == "Tutorial")
         {
-            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.Return) )
             {
                 SceneManager.LoadScene("Tutorial2", LoadSceneMode.Single);
             }
@@ -34,7 +34,7 @@ public class SceneCtrl : MonoBehaviour
 
         if (scene.name == "Tutorial2")
         {
-            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.Return) )
             {
                 SceneManager.LoadScene("Game", LoadSceneMode.Single);
             }
@@ -42,7 +42,7 @@ public class SceneCtrl : MonoBehaviour
 
         if (scene.name == "Game")
         {
-            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.Return) )
             {
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
                 ResultScore.SetFinalScore(player.GetComponent<player>().score);
@@ -52,7 +52,7 @@ public class SceneCtrl : MonoBehaviour
 
         if (scene.name == "Result")
         {
-            if (Input.GetKeyDown(KeyCode.Return) | Input.GetKeyDown(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.Return) )
             {
                 SceneManager.LoadScene("Title", LoadSceneMode.Single);
             }

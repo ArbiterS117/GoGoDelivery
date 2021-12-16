@@ -99,15 +99,24 @@ public class player : MonoBehaviour
     //=========================== WallJump
     public float WallJumpSpeed = 30.0f;
     public float WallJumpForce = 5.0f;
+    public GameObject WallJumpEffect;
 
     //=========================== Useful Rail Charge Timer
     public float RailChargeTime = 1;
     public float Rail_CTimer = 0;
 
+    //=========================== WallJump
+    public float FlyPlatJumpForce = 2200.0f;
+    public GameObject FlyPlatEffect;
+
     //=========================== Effect Prefab
     [Header("Effect Prefab")]
     public GameObject CargoEffect;
     public GameObject CustormerEffect;
+
+    //=========================== Debug
+    public Transform[] savepoint;
+    public int CurSavePoint;
 
     void Start()
     {
@@ -234,6 +243,17 @@ public class player : MonoBehaviour
                 RigidBody.AddForce(new Vector2(0, Jumpforce));
             }
            
+        }
+
+        //================
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            transform.position = savepoint[CurSavePoint].position;
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            CurSavePoint++;
+            if (CurSavePoint >= savepoint.Length) CurSavePoint = 0;
         }
     }
 
@@ -522,8 +542,23 @@ public class player : MonoBehaviour
         }
     }
 
-    //======Collision
-    void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if(other.tag == "FlyTrigger")
+        {
+            if (IsBoosting)
+            {
+                Speed = BoostMaxSpeed * playerDir;
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
+                RigidBody.AddForce(new Vector2(0, FlyPlatJumpForce));
+                //エフェクト
+                GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
+            }
+        }
+    }
+
+        //======Collision
+        void OnCollisionEnter2D(Collision2D other)
     {
         if(other.transform.tag == "Wall")
         {
@@ -532,6 +567,8 @@ public class player : MonoBehaviour
                 Speed *= -1 * 0.5f;
                 RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
                 RigidBody.AddForce(new Vector2(0, WallJumpForce));
+                //エフェクト
+                GameObject effect = Instantiate(WallJumpEffect, this.transform.position, Quaternion.identity) as GameObject;
             }
             else
             {
