@@ -15,6 +15,7 @@ TagManager:
   - FxTemporaire
   - Wall
   - FlyTrigger
+  - RailAb
   layers:
   - Default
   - TransparentFX

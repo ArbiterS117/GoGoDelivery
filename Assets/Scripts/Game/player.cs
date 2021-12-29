@@ -65,7 +65,7 @@ public class player : MonoBehaviour
 
     //=========================== grapple rail
     [Header("grapple rail")]
-    static public int MaxGRailNum = 3;
+    static public int MaxGRailNum = 0;
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
     public float GrailEnergy = 1.0f;    // defult : 1.0
@@ -540,6 +540,15 @@ public class player : MonoBehaviour
                 GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
             }
         }
+
+        ///////////////////////////////////////////////////////
+        if (other.tag == "RailAb")
+        {
+            MaxGRailNum++;
+            //usedGrail = 0;
+            Destroy(other.gameObject);
+        }
+
     }
 
     private void OnTriggerExit2D(Collider2D other)
