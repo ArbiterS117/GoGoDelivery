@@ -15,6 +15,7 @@ TagManager:
   - FxTemporaire
   - Wall
   - FlyTrigger
+  - JamZone
   layers:
   - Default
   - TransparentFX

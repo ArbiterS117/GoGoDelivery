@@ -109,6 +109,11 @@ public class player : MonoBehaviour
     public float FlyPlatJumpForce = 2200.0f;
     public GameObject FlyPlatEffect;
 
+    //=========================== Event
+    [Header("Event")]
+    public bool IsJamming = false;
+    public float JammingMaxSpeed = 20.0f;
+
     //=========================== Effect Prefab
     [Header("Effect Prefab")]
     public GameObject CargoEffect;
@@ -338,6 +343,12 @@ public class player : MonoBehaviour
             }
         }
 
+        //==============Jamming
+        if (IsJamming)
+        {
+            MaxMoveSpeed = JammingMaxSpeed;
+        }
+
     }
 
     void PhysicsUpdate()
@@ -540,6 +551,12 @@ public class player : MonoBehaviour
                 GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
             }
         }
+
+        if (other.transform.tag == "JamZone")
+        {
+            this.IsJamming = true;
+            this.transform.Find("speedDownIcon").gameObject.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -555,10 +572,16 @@ public class player : MonoBehaviour
                 GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
             }
         }
+
+        if (other.transform.tag == "JamZone")
+        {
+            this.IsJamming = false;
+            this.transform.Find("speedDownIcon").gameObject.SetActive(false);
+        }
     }
 
-        //======Collision
-        void OnCollisionEnter2D(Collision2D other)
+    //======Collision
+    void OnCollisionEnter2D(Collision2D other)
     {
         if(other.transform.tag == "Wall")
         {
@@ -575,6 +598,8 @@ public class player : MonoBehaviour
                 Speed = 0.0f;
             }
         }
+
+       
     }
 
 }
