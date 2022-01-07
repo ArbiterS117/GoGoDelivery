@@ -16,6 +16,11 @@ TagManager:
   - Wall
   - FlyTrigger
   - JamZone
+  - Damage
+  - RailJumpTrigger
+  - RailGunItem
+  - CurveRailJumpTrigger
+  - ATKEnemyZone
   layers:
   - Default
   - TransparentFX

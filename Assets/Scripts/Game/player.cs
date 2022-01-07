@@ -57,15 +57,15 @@ public class player : MonoBehaviour
     public bool[] CRebornPointUsed;
     public int CRebornPointNum;
 
-    bool isCargoAreaArrow = false;
-    List<GameObject> ArrowList = new List<GameObject>();
-    List<GameObject> StartArrowList = new List<GameObject>();
+   // bool isCargoAreaArrow = false;
+   // List<GameObject> ArrowList = new List<GameObject>();
+   // List<GameObject> StartArrowList = new List<GameObject>();
 
     float oriGravity = 0.0f;
 
     //=========================== grapple rail
     [Header("grapple rail")]
-    static public int MaxGRailNum = 3;
+    public int MaxGRailNum = 1;
     public int usedGrail = 0;
     public List<GameObject> GRail = new List<GameObject>();
     public float GrailEnergy = 1.0f;    // defult : 1.0
@@ -279,47 +279,39 @@ public class player : MonoBehaviour
         }
       
 
-        if (OnRail)
-        {
-            this.GetComponent<Collider2D>().isTrigger = true;
-        }
-        else
-        {
-            this.GetComponent<Collider2D>().isTrigger = false;
-        }
-
+      
         if (Speed > 0.0f) playerDir = 1;
         else if (Speed < 0.0f) playerDir = -1;
         this.transform.Find("Sprite").localScale= new Vector3(oriScale.x * playerDir, oriScale.y, oriScale.z);
 
-        if(HoldingNimotsuNum == 0)
-        {
-            if(isCargoAreaArrow == false)
-            {
-                for (int i = 0; i < StartRebornPoint.Length; i++)
-                {
-                    GameObject arrow = (GameObject)Resources.Load("StartArrow");
-                    GameObject targetArrow = (GameObject)Instantiate(arrow,
-                                                  this.transform.position,
-                                                   Quaternion.identity);
-                    targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;
-                    targetArrow.GetComponent<ArrowCtrl>().Target = StartRebornPoint[i];
-                    StartArrowList.Add(targetArrow);
-                }
-                isCargoAreaArrow = true;
-
-            }
-        }
-        else
-        {
-            for (int i = 0; i < StartArrowList.Count; i++)
-            {
-                GameObject temp = StartArrowList[0];
-                StartArrowList.Remove(temp);
-                Destroy(temp);
-            }
-            isCargoAreaArrow = false;
-        }
+       // if(HoldingNimotsuNum == 0)
+       // {
+       //     if(isCargoAreaArrow == false)
+       //     {
+       //         for (int i = 0; i < StartRebornPoint.Length; i++)
+       //         {
+       //             GameObject arrow = (GameObject)Resources.Load("StartArrow");
+       //             GameObject targetArrow = (GameObject)Instantiate(arrow,
+       //                                           this.transform.position,
+       //                                            Quaternion.identity);
+       //             targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;
+       //             targetArrow.GetComponent<ArrowCtrl>().Target = StartRebornPoint[i];
+       //             StartArrowList.Add(targetArrow);
+       //         }
+       //         isCargoAreaArrow = true;
+       //
+       //     }
+       // }
+       // else
+       // {
+       //     for (int i = 0; i < StartArrowList.Count; i++)
+       //     {
+       //         GameObject temp = StartArrowList[0];
+       //         StartArrowList.Remove(temp);
+       //         Destroy(temp);
+       //     }
+       //     isCargoAreaArrow = false;
+       // }
 
         //==============Boosting
         if (IsBoosting)
@@ -378,17 +370,17 @@ public class player : MonoBehaviour
         //Exit Rail
         if (OnRailPre)
         {
-            RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.0f);
+            //RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.0f);
 
             //jump
             if (((Speed >= 0.0f && RailNormal.x < -0.7f) || (Speed < 0.0f && RailNormal.x > 0.7f) ) && !OnRailJumpTrigger)
             {
-                CaculatedJumpForce = Mathf.Abs(RailNormal.x) * ExitCurvedRailJumpForce * 2 - ExitCurvedRailJumpForce;
-                RigidBody.velocity = new Vector2(RigidBody.velocity.x, CaculatedJumpForce);
+                //CaculatedJumpForce = Mathf.Abs(RailNormal.x) * ExitCurvedRailJumpForce * 2 - ExitCurvedRailJumpForce;
+                //RigidBody.velocity = new Vector2(RigidBody.velocity.x, CaculatedJumpForce);
             }
             else if (((Speed >= 0.0f && RailNormal.x < -0.2f) || (Speed < 0.0f && RailNormal.x > 0.2f)) && !OnRailJumpTrigger)
             {
-                RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitRailJumpForce);
+                //RigidBody.velocity = new Vector2(RigidBody.velocity.x, ExitRailJumpForce);
             }
         }
 
@@ -399,7 +391,7 @@ public class player : MonoBehaviour
         Vector2 position = transform.position;
         Vector2 direction = Vector2.down /** RaycastDistance*/;
         //this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
-
+        
         RaycastHit2D hit = Physics2D.Raycast(position, direction, RaycastDistance, RailLayer);
         if (hit.collider != null)
         {
@@ -417,15 +409,14 @@ public class player : MonoBehaviour
             if (RigidBody.velocity.y <= 0.0f)
             {
                 OnRail = true;
-                if(playerDir == 1) OnRailDir = true;
+                RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
+                if (playerDir == 1) OnRailDir = true;
                 if(playerDir ==-1) OnRailDir = false;
-                OnRailJumpTrigger = false;
             }
 
             if (OnRail == true)
             {               
                 RailNormal = hit.normal;
-
                 //pos & rot
                 Vector3 pos = transform.position;
                 Vector2 UpOffset = hit.normal * OnRailUpOffset;
@@ -460,7 +451,6 @@ public class player : MonoBehaviour
             RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
             RigidBody.AddForce(new Vector2(0, Jumpforce));
             OnRail = false;
-            OnRailJumpTrigger = true;
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -490,72 +480,122 @@ public class player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
 
-        if(other.tag == "CargoArea")
-        {
-            int targetNeed = 0;
-            if (HoldingNimotsuNum < MaxNimotsuNum)
-            {
-                targetNeed = MaxNimotsuNum - HoldingNimotsuNum;
-                HoldingNimotsuNum = MaxNimotsuNum;
-            }
-            //お客様再生
-            for(int i = 0; i < targetNeed; i++)
-            {
-                while (true)
-                {
-                    int index = (int)Random.Range(0, CRebornPointNum - 0.001f);
-                    if (CRebornPointUsed[index] == false)
-                    {
-                        GameObject customer = (GameObject)Resources.Load("customer");
-                        GameObject target = (GameObject)Instantiate(customer,
-                                                      CRebornPoint[index].position,
-                                                      Quaternion.identity);
-                        CRebornPointUsed[index] = true;
-                        target.GetComponent<Custormer>().index = index;
+       //if(other.tag == "CargoArea")
+       //{
+       //    int targetNeed = 0;
+       //    if (HoldingNimotsuNum < MaxNimotsuNum)
+       //    {
+       //        targetNeed = MaxNimotsuNum - HoldingNimotsuNum;
+       //        HoldingNimotsuNum = MaxNimotsuNum;
+       //    }
+       //    //お客様再生
+       //    for(int i = 0; i < targetNeed; i++)
+       //    {
+       //        while (true)
+       //        {
+       //            int index = (int)Random.Range(0, CRebornPointNum - 0.001f);
+       //            if (CRebornPointUsed[index] == false)
+       //            {
+       //                GameObject customer = (GameObject)Resources.Load("customer");
+       //                GameObject target = (GameObject)Instantiate(customer,
+       //                                              CRebornPoint[index].position,
+       //                                              Quaternion.identity);
+       //                CRebornPointUsed[index] = true;
+       //                target.GetComponent<Custormer>().index = index;
+       //
+       //                //矢印再生
+       //                GameObject arrow = (GameObject)Resources.Load("arrow");
+       //                GameObject targetArrow = (GameObject)Instantiate(arrow,
+       //                                              this.transform.position,
+       //                                               Quaternion.identity);
+       //                targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;                      
+       //                targetArrow.GetComponent<ArrowCtrl>().Target = CRebornPoint[index];
+       //                ArrowList.Add(targetArrow);
+       //                target.GetComponent<Custormer>().Arrow = targetArrow;
+       //
+       //                //エフェクト
+       //                GameObject effect = Instantiate(CargoEffect, this.transform.position, Quaternion.identity) as GameObject;
+       //
+       //                break;
+       //            }
+       //        }
+       //
+       //    }
+       //}
 
-                        //矢印再生
-                        GameObject arrow = (GameObject)Resources.Load("arrow");
-                        GameObject targetArrow = (GameObject)Instantiate(arrow,
-                                                      this.transform.position,
-                                                       Quaternion.identity);
-                        targetArrow.GetComponent<ArrowCtrl>().Player = this.transform;                      
-                        targetArrow.GetComponent<ArrowCtrl>().Target = CRebornPoint[index];
-                        ArrowList.Add(targetArrow);
-                        target.GetComponent<Custormer>().Arrow = targetArrow;
-
-                        //エフェクト
-                        GameObject effect = Instantiate(CargoEffect, this.transform.position, Quaternion.identity) as GameObject;
-
-                        break;
-                    }
-                }
-
-            }
-        }
-
-        if(other.tag == "customer")
-        {
-            if (HoldingNimotsuNum > 0)
-            {              
-                HoldingNimotsuNum--;
-                CRebornPointUsed[other.GetComponent<Custormer>().index] = false;
-
-                GameObject temp = other.GetComponent<Custormer>().Arrow;
-                ArrowList.Remove(temp);
-                Destroy(temp);
-                Destroy(other.gameObject);                                 
-
-                score++;
-
-                //エフェクト
-                GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
-            }
-        }
+       //if(other.tag == "customer")
+       //{
+       //    if (HoldingNimotsuNum > 0)
+       //    {              
+       //        HoldingNimotsuNum--;
+       //        CRebornPointUsed[other.GetComponent<Custormer>().index] = false;
+       //
+       //        GameObject temp = other.GetComponent<Custormer>().Arrow;
+       //        ArrowList.Remove(temp);
+       //        Destroy(temp);
+       //        Destroy(other.gameObject);                                 
+       //
+       //        score++;
+       //
+       //        //エフェクト
+       //        GameObject effect = Instantiate(CustormerEffect, this.transform.position, Quaternion.identity) as GameObject;
+       //    }
+       //}
 
         if (other.transform.tag == "JamZone")
         {
             this.IsJamming = true;
             this.transform.Find("speedDownIcon").gameObject.SetActive(true);
+        }
+
+        if(other.transform.tag == "RailJumpTrigger")
+        {
+            float jumpForce = other.GetComponent<RailJumpData>().JumpForce;
+            Speed = BoostMaxSpeed * playerDir;
+            RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
+            RigidBody.AddForce(new Vector2(0, jumpForce));
+            //エフェクト
+            GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
+
+            if (other.GetComponent<RailJumpData>().DestroyAfterUsed) Destroy(other.transform.parent.gameObject);
+        }
+
+        if (other.transform.tag == "CurveRailJumpTrigger")
+        {
+            float jumpForce = other.GetComponent<RailJumpData>().JumpForce;
+            Speed =  0.0f;
+            RigidBody.velocity = new Vector2(0.0f, 0.1f);
+            RigidBody.AddForce(new Vector2(0, jumpForce));
+            //エフェクト
+            GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
+
+            if (other.GetComponent<RailJumpData>().DestroyAfterUsed) Destroy(other.transform.parent.gameObject);
+        }
+        
+
+        if (other.transform.tag == "RailGunItem")
+        {
+            MaxGRailNum += 1;
+            Destroy(other.gameObject);
+        }
+
+        if (other.transform.tag == "ATKEnemyZone")
+        {
+            RailJumpData TargetData = other.GetComponent<RailJumpData>();
+            float jumpForce = TargetData.JumpForce;
+            Speed = BoostMaxSpeed * playerDir;
+            RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
+            RigidBody.AddForce(new Vector2(0, jumpForce));
+            //エフェクト
+            GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
+
+            if (TargetData.DestroyAfterUsed) Destroy(other.transform.parent.gameObject);
+
+            TargetData.HP -= 1;
+            if (TargetData.HP <= 0){
+                other.GetComponentInParent<Animator>().SetTrigger("Destroyed");
+                other.transform.parent.Find("explode").gameObject.SetActive(true);
+            }
         }
     }
 
@@ -585,13 +625,15 @@ public class player : MonoBehaviour
     {
         if(other.transform.tag == "Wall")
         {
-            if (IsBoosting && Mathf.Abs(Speed) >= WallJumpSpeed)
+           
+            if (IsBoosting && Mathf.Abs(Speed) >= WallJumpSpeed || OnRail)
             {
-                Speed *= -1 * 0.5f;
+                Speed *= -1 * 0.75f;
                 RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
                 RigidBody.AddForce(new Vector2(0, WallJumpForce));
                 //エフェクト
                 GameObject effect = Instantiate(WallJumpEffect, this.transform.position, Quaternion.identity) as GameObject;
+                OnRail = false;
             }
             else
             {

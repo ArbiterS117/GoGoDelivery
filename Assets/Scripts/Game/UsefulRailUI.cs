@@ -15,7 +15,7 @@ public class UsefulRailUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int UsefulRail = player.MaxGRailNum - playerScript.usedGrail;
+        int UsefulRail = playerScript.MaxGRailNum - playerScript.usedGrail;
 
         if (UsefulRail <= 0) transform.Find("1").gameObject.SetActive(false);
         else transform.Find("1").gameObject.SetActive(true);

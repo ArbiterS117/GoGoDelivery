@@ -128,6 +128,16 @@ public class playerSub : MonoBehaviour
                 Vector3 oriScale = sprite.transform.localScale;
                 sprite.transform.localScale = new Vector3(oriScale.x * newScale, oriScale.y, oriScale.z);
 
+                //======jumpTrigger
+                if(i == EdgeCollider.pointCount - 1)
+                {
+                    GameObject RailTriggerobj = (GameObject)Resources.Load("RailTrigger");
+                    GameObject RailTrigger = (GameObject)Instantiate(RailTriggerobj,
+                                                                sPos,
+                                                                Quaternion.identity);
+                    RailTrigger.transform.SetParent(Item.transform);
+                }
+
             }
             return Item;
 
@@ -149,6 +159,8 @@ public class playerSub : MonoBehaviour
             //Scaleing
             Vector3 scl = Item.transform.localScale;
             Item.transform.localScale = new Vector3(scl.x * player.GrailEnergy, scl.y, scl.z);
+
+            
 
             return Item;
 
