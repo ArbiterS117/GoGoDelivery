@@ -284,6 +284,15 @@ public class player : MonoBehaviour
         else if (Speed < 0.0f) playerDir = -1;
         this.transform.Find("Sprite").localScale= new Vector3(oriScale.x * playerDir, oriScale.y, oriScale.z);
 
+        //savepoint
+        for (int i = 0; i < savepoint.Length; i++)
+        {
+            if (transform.position.x >= savepoint[i].position.x) CurSavePoint = i;
+        }
+
+
+
+
        // if(HoldingNimotsuNum == 0)
        // {
        //     if(isCargoAreaArrow == false)
@@ -577,6 +586,11 @@ public class player : MonoBehaviour
         {
             MaxGRailNum += 1;
             Destroy(other.gameObject);
+        }
+
+        if (other.transform.tag == "Damage")
+        {
+            transform.position = savepoint[CurSavePoint].position;
         }
 
         if (other.transform.tag == "ATKEnemyZone")

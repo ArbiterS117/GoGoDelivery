@@ -28,7 +28,7 @@ public class SceneCtrl : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Return) )
             {
-                SceneManager.LoadScene("Tutorial2", LoadSceneMode.Single);
+                SceneManager.LoadScene("Game", LoadSceneMode.Single);
             }
         }
 
