@@ -122,6 +122,7 @@ public class player : MonoBehaviour
     //=========================== Debug
     public Transform[] savepoint;
     public int CurSavePoint;
+    public GameObject eventtruck;
 
     void Start()
     {
@@ -254,6 +255,7 @@ public class player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F1))
         {
             transform.position = savepoint[CurSavePoint].position;
+            eventtruck.SetActive(false);
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
@@ -591,6 +593,7 @@ public class player : MonoBehaviour
         if (other.transform.tag == "Damage")
         {
             transform.position = savepoint[CurSavePoint].position;
+            eventtruck.SetActive(false);
         }
 
         if (other.transform.tag == "ATKEnemyZone")
