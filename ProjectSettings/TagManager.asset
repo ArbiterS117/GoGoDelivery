@@ -21,6 +21,7 @@ TagManager:
   - RailGunItem
   - CurveRailJumpTrigger
   - ATKEnemyZone
+  - coin
   layers:
   - Default
   - TransparentFX
