@@ -213,6 +213,8 @@ public class player : MonoBehaviour
 
                 
             }
+            if (OnRail) OnRail = false;
+
             return true;
         }
 
@@ -221,16 +223,21 @@ public class player : MonoBehaviour
 
     void InputUpdate()
     {
-        if (Input.GetKey(KeyCode.A) | Input.GetKey(KeyCode.LeftArrow)) //左
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) //左
         {
             if(IsShooting)this.Speed -= ShootingAddSpeed;
-            else          this.Speed -= AddSpeed;           
+            else          this.Speed -= AddSpeed;
+            GetComponent<Animator>().SetBool("isPressingMove", true);
         }
-        if (Input.GetKey(KeyCode.D) | Input.GetKey(KeyCode.RightArrow)) //右
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) //右
         {
             if(IsShooting)this.Speed += ShootingAddSpeed;
             else          this.Speed += AddSpeed;
-
+            GetComponent<Animator>().SetBool("isPressingMove", true);
+        }
+        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+        {
+            GetComponent<Animator>().SetBool("isPressingMove", false);
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -261,6 +268,11 @@ public class player : MonoBehaviour
         {
             CurSavePoint++;
             if (CurSavePoint >= savepoint.Length) CurSavePoint = 0;
+        }
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            MaxGRailNum += 1;
+
         }
     }
 
@@ -327,6 +339,7 @@ public class player : MonoBehaviour
         //==============Boosting
         if (IsBoosting)
         {
+            GetComponent<Animator>().SetBool("isDashing", true);
             MaxMoveSpeed = BoostMaxSpeed;
             BoostCTime += Time.deltaTime;
             if(BoostCTime >= BoostTime)
@@ -336,6 +349,7 @@ public class player : MonoBehaviour
                 MaxMoveSpeed = oriMaxMoveSpeed;
             }
 
+          
             //==Dash Effect
             DashEffectOutCTime += Time.deltaTime;
             if(DashEffectOutCTime >= DashEffectOutTime)
@@ -344,6 +358,10 @@ public class player : MonoBehaviour
                 GameObject effect = Instantiate(DashEffect, this.transform.position, Quaternion.Euler(new Vector3(0.0f, -90.0f * playerDir, 0.0f))) as GameObject;
                 DashEffectOutCTime = 0.0f;
             }
+        }
+        else
+        {
+            GetComponent<Animator>().SetBool("isDashing", false);
         }
 
         //==============Jamming
@@ -414,35 +432,45 @@ public class player : MonoBehaviour
                     OnRail = false;
                     return;
                 }
+                OnRail = false;
+                GetComponent<Animator>().SetBool("OnRail", false);
             }
-       
+
 
             if (RigidBody.velocity.y <= 0.0f)
             {
                 OnRail = true;
                 RigidBody.velocity = new Vector2(RigidBody.velocity.x, 0.1f);
                 if (playerDir == 1) OnRailDir = true;
-                if(playerDir ==-1) OnRailDir = false;
+                if (playerDir == -1) OnRailDir = false;
             }
 
             if (OnRail == true)
-            {               
+            {
                 RailNormal = hit.normal;
                 //pos & rot
                 Vector3 pos = transform.position;
                 Vector2 UpOffset = hit.normal * OnRailUpOffset;
-                this.transform.position = new Vector3(hit.point.x , hit.point.y + OnRailUpOffset, pos.z);
+                this.transform.position = new Vector3(hit.point.x, hit.point.y + OnRailUpOffset, pos.z);
 
                 Quaternion rot = GetComponent<Transform>().rotation;
                 Vector2 up = new Vector2(0, 1);
                 var angle = Vector2.Angle(up, hit.normal);
                 if (hit.normal.x <= 0.0f) this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
                 else this.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
+
+                GetComponent<Animator>().SetBool("OnRail", true);
+                GetComponent<Animator>().SetBool("Fireing", false);
+                GetComponent<Animator>().SetBool("IsShooting", false);
             }
 
 
         }
-        else OnRail = false;
+        else
+        {
+            OnRail = false;
+            GetComponent<Animator>().SetBool("OnRail", false);
+        }
     }
 
     void OnRailInputUpdate()
@@ -485,6 +513,13 @@ public class player : MonoBehaviour
         this.transform.Translate(Vector3.right * Speed * Time.deltaTime);
 
       
+    }
+
+    //===================Anim
+    void setAnimFireingF()
+    {
+        GetComponent<Animator>().SetBool("Fireing", false);
+
     }
 
     //  当たり判定
@@ -612,6 +647,7 @@ public class player : MonoBehaviour
             if (TargetData.HP <= 0){
                 other.GetComponentInParent<Animator>().SetTrigger("Destroyed");
                 other.transform.parent.Find("explode").gameObject.SetActive(true);
+                other.transform.parent.Find("DamageCollider").gameObject.SetActive(false);
             }
         }
     }
@@ -638,7 +674,7 @@ public class player : MonoBehaviour
     }
 
     //======Collision
-    void OnCollisionEnter2D(Collision2D other)
+    void OnCollisionStay2D(Collision2D other)
     {
         if(other.transform.tag == "Wall")
         {
@@ -661,5 +697,8 @@ public class player : MonoBehaviour
        
     }
 
+   
+
 }
+
 

@@ -43,7 +43,8 @@ public class playerSub : MonoBehaviour
         {
             if (player.CanStoreEnergy == true)
             {
-                if(player.ShootingJump == false)
+                player.GetComponent<Animator>().SetBool("IsShooting", true);
+                if (player.ShootingJump == false)
                 {
                     player.ShootingJump = true; 
                     player.RigidBody.velocity = new Vector2(player.RigidBody.velocity.x, player.ShootingJumpVelocity);
@@ -89,7 +90,7 @@ public class playerSub : MonoBehaviour
                                                           Quaternion.identity);
             // Angle & position currection      
             Vector3 ItemPosOri = Item.transform.position;
-            Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 2.0f, ItemPosOri.z);
+            Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 5.0f, ItemPosOri.z);
             EdgeCollider2D EdgeCollider = Item.GetComponent<EdgeCollider2D>();
             float vx = 0.0f, vy = 0.0f;
             float radius = 15.0f / player.GrailEnergy;
@@ -139,6 +140,10 @@ public class playerSub : MonoBehaviour
                 }
 
             }
+            player.GetComponent<Animator>().SetBool("IsShooting", false);
+            player.GetComponent<Animator>().SetBool("Fireing", true);
+            player.GetComponent<Animator>().SetTrigger("Shoot");
+
             return Item;
 
 
@@ -154,13 +159,15 @@ public class playerSub : MonoBehaviour
             if (AimPos.y <= 0.0f) Item.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, -angle));
             else Item.transform.rotation = Quaternion.Euler(new Vector3(rot.x, rot.y, angle));
             Vector3 ItemPosOri = Item.transform.position;
-            Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 4.0f, ItemPosOri.z);
+            Item.transform.position = new Vector3(ItemPosOri.x, ItemPosOri.y - 8.0f, ItemPosOri.z);
 
             //Scaleing
             Vector3 scl = Item.transform.localScale;
             Item.transform.localScale = new Vector3(scl.x * player.GrailEnergy, scl.y, scl.z);
 
-            
+            player.GetComponent<Animator>().SetBool("IsShooting", false);
+            player.GetComponent<Animator>().SetBool("Fireing", true);
+            player.GetComponent<Animator>().SetTrigger("Shoot");
 
             return Item;
 
@@ -188,6 +195,7 @@ public class playerSub : MonoBehaviour
         player.IsShooting = false;
         player.GrailEnergy = player.oriGrailEnergy;
         player.ShootingJump = false;
+
 
     }
 
