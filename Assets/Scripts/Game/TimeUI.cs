@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class TimeUI : MonoBehaviour
 {
     //private int totaltime1 = 5;
-    private int totaltime2 = 2000;
+    private int totaltime2 = 0;
     private float intervaletime = 1;
     //public Text countdown1text;
     public Text countdown2text;
@@ -23,26 +23,25 @@ public class TimeUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (totaltime2 <= 0)
-        {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            ResultScore.SetFinalScore(player.GetComponent<player>().score);
-            SceneManager.LoadScene("Result", LoadSceneMode.Single);
+        //if (totaltime2 <= 0)
+        //{
+        //    GameObject player = GameObject.FindGameObjectWithTag("Player");
+        //    ResultScore.SetFinalScore(player.GetComponent<player>().score);
+        //    SceneManager.LoadScene("Result", LoadSceneMode.Single);
 
-        }
+        //}
 
         int M = (int)(totaltime2 / 60);
         float S = totaltime2 % 60;
-        if (totaltime2 > 0)
+
+        intervaletime -= Time.deltaTime;
+        if (intervaletime <= 0)
         {
-            intervaletime -= Time.deltaTime;
-            if (intervaletime <= 0)
-            {
-                intervaletime += 1;
-                totaltime2--;
-                countdown2text.text = string.Format("{0:00}:{1:00}", M, S);
-            }
+            intervaletime += 1;
+            totaltime2++;
+            countdown2text.text = string.Format("{0:00}:{1:00}", M, S);
         }
+        
         //if (totaltime2 <= 0)
         //{
         //    totaltime2 = 300;

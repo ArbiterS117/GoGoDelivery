@@ -650,6 +650,12 @@ public class player : MonoBehaviour
                 other.transform.parent.Find("DamageCollider").gameObject.SetActive(false);
             }
         }
+
+        if (other.transform.tag == "coin")
+        {
+            score += 1;
+            Destroy(other.gameObject);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
