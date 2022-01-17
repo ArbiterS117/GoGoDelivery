@@ -119,6 +119,9 @@ public class player : MonoBehaviour
     public GameObject CargoEffect;
     public GameObject CustormerEffect;
 
+    //=========================== Anim
+    bool MoveBtnUp = true;
+
     //=========================== Debug
     public Transform[] savepoint;
     public int CurSavePoint;
@@ -228,16 +231,30 @@ public class player : MonoBehaviour
             if(IsShooting)this.Speed -= ShootingAddSpeed;
             else          this.Speed -= AddSpeed;
             GetComponent<Animator>().SetBool("isPressingMove", true);
+            if (MoveBtnUp)
+            {
+                GetComponent<Animator>().SetTrigger("MoveBtnUp");
+                MoveBtnUp = false;
+            }
         }
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) //右
         {
             if(IsShooting)this.Speed += ShootingAddSpeed;
             else          this.Speed += AddSpeed;
             GetComponent<Animator>().SetBool("isPressingMove", true);
+            if (MoveBtnUp)
+            {
+                GetComponent<Animator>().SetTrigger("MoveBtnUp");
+                MoveBtnUp = false;
+            }
         }
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
         {
             GetComponent<Animator>().SetBool("isPressingMove", false);
+        }
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            MoveBtnUp = true;
         }
 
         if (Input.GetMouseButtonDown(1))
