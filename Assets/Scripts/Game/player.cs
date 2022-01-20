@@ -122,6 +122,9 @@ public class player : MonoBehaviour
     //=========================== Anim
     bool MoveBtnUp = true;
 
+    //=========================== Result
+    public int deathTime = 0;
+
     //=========================== Debug
     public Transform[] savepoint;
     public int CurSavePoint;
@@ -645,6 +648,7 @@ public class player : MonoBehaviour
         if (other.transform.tag == "Damage")
         {
             transform.position = savepoint[CurSavePoint].position;
+            deathTime++;
             eventtruck.SetActive(false);
         }
 

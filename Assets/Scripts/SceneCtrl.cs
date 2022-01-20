@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class SceneCtrl : MonoBehaviour
 {
     public string CurrentScene;
+    public GameObject TimeUI;
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +46,10 @@ public class SceneCtrl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Return) )
             {
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
+                GameObject timeUI = TimeUI;
                 ResultScore.SetFinalScore(player.GetComponent<player>().score);
+                ResultScore.SetFinalClearTime(timeUI.GetComponent<TimeUI>().totaltime2);
+                ResultScore.SetFinalDeathTime(player.GetComponent<player>().deathTime);
                 SceneManager.LoadScene("Result", LoadSceneMode.Single);
             }
         }

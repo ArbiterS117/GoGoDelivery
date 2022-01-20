@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class TimeUI : MonoBehaviour
 {
     //private int totaltime1 = 5;
-    private int totaltime2 = 0;
+    public int totaltime2 = 0;
     private float intervaletime = 1;
     //public Text countdown1text;
     public Text countdown2text;
