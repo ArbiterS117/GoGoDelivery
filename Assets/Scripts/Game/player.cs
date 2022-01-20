@@ -118,6 +118,8 @@ public class player : MonoBehaviour
     [Header("Effect Prefab")]
     public GameObject CargoEffect;
     public GameObject CustormerEffect;
+    public GameObject CoinEffect;
+    public GameObject HitEnemyEffect;
 
     //=========================== Anim
     bool MoveBtnUp = true;
@@ -661,6 +663,9 @@ public class player : MonoBehaviour
             RigidBody.AddForce(new Vector2(0, jumpForce));
             //エフェクト
             GameObject effect = Instantiate(FlyPlatEffect, this.transform.position, Quaternion.identity) as GameObject;
+            Vector3 pos = this.transform.position;
+            pos.y -= 5.0f;
+            GameObject effect2 = Instantiate(HitEnemyEffect, pos, Quaternion.identity) as GameObject;
 
             if (TargetData.DestroyAfterUsed) Destroy(other.transform.parent.gameObject);
 
@@ -676,6 +681,9 @@ public class player : MonoBehaviour
         {
             score += 1;
             Destroy(other.gameObject);
+
+            //エフェクト
+            GameObject effect = Instantiate(CoinEffect, this.transform.position, Quaternion.identity) as GameObject;
         }
     }
 
