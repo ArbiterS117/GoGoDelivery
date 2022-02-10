@@ -43,7 +43,7 @@ public class SceneCtrl : MonoBehaviour
 
         if (scene.name == "Game")
         {
-            if (Input.GetKeyDown(KeyCode.Return) )
+            if (Input.GetKeyDown(KeyCode.F4) )
             {
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
                 GameObject timeUI = TimeUI;

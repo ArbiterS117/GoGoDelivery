@@ -25,6 +25,8 @@ public class Camera : MonoBehaviour
         // Vector3 pos = player.position;
         // pos.z = transform.position.z;
 
+        if (player.GetComponent<player>().isDead) return;
+
         if (this.tag == "MainCamera")
         {
             transform.position = new Vector3(player.position.x, player.position.y + UpDis, transform.position.z);

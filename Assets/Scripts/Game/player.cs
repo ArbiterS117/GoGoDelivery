@@ -57,6 +57,14 @@ public class player : MonoBehaviour
     public bool[] CRebornPointUsed;
     public int CRebornPointNum;
 
+    public bool  isDead = false;
+    public float DeadtoRebornTime = 3.0f;
+           float DeadtoRebornCTime = 0.0f;
+    public bool  isReborn = false;
+    public float isRebornTime = 3.0f;
+           float isRebornCTime = 0.0f;
+           float RebornBlinkCTime = 0.0f;
+
    // bool isCargoAreaArrow = false;
    // List<GameObject> ArrowList = new List<GameObject>();
    // List<GameObject> StartArrowList = new List<GameObject>();
@@ -120,6 +128,15 @@ public class player : MonoBehaviour
     public GameObject CustormerEffect;
     public GameObject CoinEffect;
     public GameObject HitEnemyEffect;
+    public GameObject GetHitEffect;
+
+    //=========================== Sound
+    public AudioSource audioCtrl;
+    public AudioClip JumpSE;
+    public AudioClip FireSE;
+    public AudioClip GetHitSE;
+    public AudioClip FlySE;
+
 
     //=========================== Anim
     bool MoveBtnUp = true;
@@ -146,6 +163,8 @@ public class player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead) return;
+
         if (!OnRail) PhysicsUpdate();
         else OnRailPhysicsUpdate();
 
@@ -160,6 +179,42 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDead)
+        {
+            DeadtoRebornCTime += Time.deltaTime;
+            if(DeadtoRebornCTime >= DeadtoRebornTime)
+            {
+                isDead = false;
+                GetComponent<Animator>().SetBool("Death", false);
+                isReborn = true;
+                DeadtoRebornCTime = 0.0f;
+                transform.position = savepoint[CurSavePoint].position;
+            }
+
+            return;
+        }
+
+        if (isReborn)
+        {
+            //blink
+            RebornBlinkCTime += Time.deltaTime;
+            if(RebornBlinkCTime >= 0.05f)
+            {
+                if(transform.Find("Sprite").GetComponent<SpriteRenderer>().color.a >= 0.9f) transform.Find("Sprite").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 0.2f);
+                else transform.Find("Sprite").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                RebornBlinkCTime = 0.0f;
+            }
+
+            isRebornCTime += Time.deltaTime;
+            if (isRebornCTime >= isRebornTime)
+            {
+                isReborn = false;
+                isRebornCTime = 0.0f;
+                RebornBlinkCTime = 0.0f;
+                transform.Find("Sprite").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+        }
+
         this.transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
 
         IsGround = IsGrounded();   
@@ -547,7 +602,7 @@ public class player : MonoBehaviour
     //  当たり判定
     private void OnTriggerEnter2D(Collider2D other)
     {
-
+        if (isDead) return;
        //if(other.tag == "CargoArea")
        //{
        //    int targetNeed = 0;
@@ -649,9 +704,12 @@ public class player : MonoBehaviour
 
         if (other.transform.tag == "Damage")
         {
-            transform.position = savepoint[CurSavePoint].position;
+            isDead = true;
+            GetComponent<Animator>().SetBool("Death",true);
             deathTime++;
             eventtruck.SetActive(false);
+            //エフェクト
+            GameObject effect = Instantiate(GetHitEffect, this.transform.position, Quaternion.identity) as GameObject;
         }
 
         if (other.transform.tag == "ATKEnemyZone")
@@ -732,7 +790,13 @@ public class player : MonoBehaviour
        
     }
 
-   
+    //==========SE
+    public void PlaySEJump()
+    {
+        audioCtrl.PlayOneShot(JumpSE);
+    }
+
+
 
 }
 

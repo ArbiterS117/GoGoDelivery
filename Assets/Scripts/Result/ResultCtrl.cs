@@ -14,7 +14,8 @@ public class ResultCtrl : MonoBehaviour
     {
         ScoreText.text     = ResultScore.GetFinalScore().ToString();
         DeathText.text     = ResultScore.GetFinalDeathTime().ToString();
-        ClearTimeText.text = ResultScore.GetFinalClearTime().ToString();
+        
+        ClearTimeText.text = string.Format("{0:00}:{1:00}", (int)ResultScore.GetFinalClearTime() / 60, (float)ResultScore.GetFinalClearTime() % 60);
     }
 
     // Update is called once per frame

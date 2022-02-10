@@ -9,6 +9,7 @@ public class BuildSwitchLayer : MonoBehaviour
         if (other.tag == "Player")
         {
             other.transform.Find("Sprite").gameObject.layer = 13;
+            other.transform.Find("SkateSprite ").gameObject.layer = 13;
         }
     }
 
@@ -17,6 +18,7 @@ public class BuildSwitchLayer : MonoBehaviour
         if (other.tag == "Player")
         {
             other.transform.Find("Sprite").gameObject.layer = 0;
+            other.transform.Find("SkateSprite ").gameObject.layer = 0;
         }
     }
 }
